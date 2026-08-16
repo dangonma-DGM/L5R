@@ -27,14 +27,14 @@
       color: #fff;
     }
 
-    /* --- Menú Lateral Izquierdo (Ordenador) --- */
+    /* --- Menú Lateral Izquierdo --- */
     .sidebar {
       width: 260px;
       background: rgba(15, 15, 15, 0.95);
       border-right: 2px solid rgba(197, 160, 89, 0.4);
       display: flex;
       flex-direction: column;
-      padding: 30px 15px;
+      padding: 25px 15px;
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.8);
       z-index: 100;
       flex-shrink: 0;
@@ -42,11 +42,11 @@
 
     .sidebar-header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .sidebar-header img {
-      width: 180px;
+      width: 160px;
       max-width: 100%;
       height: auto;
       filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
@@ -55,17 +55,28 @@
     .sidebar-nav {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
+    }
+
+    .nav-group-title {
+      color: #c5a059;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 12px 0 4px 5px;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+      padding-bottom: 3px;
     }
 
     .nav-btn {
       background: rgba(40, 40, 40, 0.6);
       color: #e0d8c3;
       border: 1px solid rgba(197, 160, 89, 0.3);
-      padding: 14px 20px;
-      font-size: 13px;
+      padding: 10px 15px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       cursor: pointer;
       text-align: left;
       border-radius: 4px;
@@ -135,6 +146,212 @@
       line-height: 1.8;
       color: #d1d1d1;
       margin-bottom: 25px;
+    }
+
+    /* --- Plantilla de Ficha de Personaje --- */
+    .character-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(15, 15, 15, 0.88);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .char-title {
+      grid-column: 1 / -1;
+      color: #c5a059;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+      border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+
+    .char-left-col, .char-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Galería de imágenes del personaje */
+    .char-gallery {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .char-img-wrapper {
+      width: 50%;
+      height: 220px;
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: 6px;
+      overflow: hidden;
+      background: rgba(30, 30, 30, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .char-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Cuadro Descriptivo */
+    .char-description-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .char-description-box label {
+      color: #c5a059;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .char-textarea {
+      width: 100%;
+      height: 180px;
+      background: rgba(25, 25, 25, 0.9);
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      border-radius: 4px;
+      padding: 12px;
+      color: #e0d8c3;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+
+    .char-textarea:focus {
+      border-color: #c5a059;
+    }
+
+    /* Panel de Lanzador de Dados */
+    .dice-roller-box {
+      background: rgba(25, 25, 25, 0.9);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: 6px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .dice-roller-box h3 {
+      color: #c5a059;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px dashed rgba(197, 160, 89, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .dice-inputs {
+      display: flex;
+      gap: 15px;
+      justify-content: space-around;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .input-group label {
+      font-size: 11px;
+      color: #aaa;
+      text-transform: uppercase;
+    }
+
+    .dice-input {
+      width: 60px;
+      background: #111;
+      border: 1px solid #c5a059;
+      color: #fff;
+      text-align: center;
+      padding: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .roll-btn {
+      background: linear-gradient(180deg, #c5a059 0%, #8a6d33 100%);
+      color: #000;
+      border: none;
+      padding: 12px;
+      font-weight: bold;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .roll-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .dice-result-total {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #c5a059;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .dice-result-total .total-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #55ff55;
+      line-height: 1.2;
+    }
+
+    .dice-history {
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(10, 10, 10, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .history-entry {
+      border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
+      padding-bottom: 4px;
+    }
+
+    .history-entry .kept-dice {
+      color: #c5a059;
+      font-weight: bold;
+    }
+
+    .history-entry .exploded {
+      color: #ff5555;
     }
 
     /* --- Vista de Notas --- */
@@ -228,7 +445,7 @@
       line-height: 1.4;
     }
 
-    /* --- Estilos de las Cartas 3D generales --- */
+    /* --- Estilos de Cartas --- */
     .deck-container {
       display: flex;
       flex-wrap: wrap;
@@ -238,10 +455,6 @@
       max-width: 1400px;
       padding: 20px 0;
       width: 100%;
-    }
-
-    .card-front:hover {
-      animation: vibrate 0.5s linear;
     }
 
     .card-container {
@@ -317,20 +530,10 @@
       pointer-events: auto;
     }
 
-    @keyframes vibrate {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      50% { transform: translateX(8px); }
-      75% { transform: translateX(-8px); }
-      100% { transform: translateX(0); }
-    }
-
-    /* =========================================================
-       DISEÑO ADAPTATIVO PARA MÓVILES Y PANTALLAS PEQUEÑAS (RESPONSIVE)
-       ========================================================= */
+    /* --- Adaptativo (Responsive) --- */
     @media (max-width: 768px) {
       body {
-        flex-direction: column; /* Pasa el menú arriba y el contenido abajo */
+        flex-direction: column;
       }
 
       .sidebar {
@@ -340,45 +543,39 @@
         padding: 15px 10px;
       }
 
-      .sidebar-header {
-        margin-bottom: 15px;
-      }
-
       .sidebar-header img {
-        width: 130px;
+        width: 120px;
       }
 
       .sidebar-nav {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
+      }
+
+      .nav-group-title {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
       }
 
       .nav-btn {
-        padding: 8px 12px;
-        font-size: 11px;
+        padding: 8px 10px;
+        font-size: 10px;
         text-align: center;
-        flex: 1 1 calc(50% - 10px); /* 2 botones por fila en móviles */
+        flex: 1 1 calc(33% - 10px);
       }
 
       .main-content {
-        padding: 20px 10px;
+        padding: 15px 8px;
       }
 
-      .welcome-card {
-        padding: 20px;
+      .character-container {
+        grid-template-columns: 1fr;
+        padding: 15px;
       }
 
-      .welcome-card h1 {
-        font-size: 18px;
-      }
-
-      .welcome-card p {
-        font-size: 13px;
-      }
-
-      /* Ajustes de Haikus para móvil */
       .haiku-columns {
         flex-direction: column;
         align-items: center;
@@ -389,14 +586,8 @@
         max-width: 280px;
       }
 
-      /* Ajustes de escala de cartas en Zoom para móvil para que no se salgan */
       .card.zoom {
         transform: scale(1.25) rotateY(180deg);
-      }
-
-      .notes-container {
-        height: 70vh;
-        padding: 15px;
       }
     }
   </style>
@@ -410,71 +601,153 @@
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="switchTab('inicio')">Inicio</button>
+      
+      <div class="nav-group-title">Personajes</div>
+      <button class="nav-btn" onclick="switchTab('char-kasai')">Kasai</button>
+      <button class="nav-btn" onclick="switchTab('char-nite')">Nite</button>
+      <button class="nav-btn" onclick="switchTab('char-takasi')">Takasi</button>
+      <button class="nav-btn" onclick="switchTab('char-ukio')">Ukio</button>
+
+      <div class="nav-group-title">Herramientas</div>
       <button class="nav-btn" onclick="switchTab('bonos')">Bonos</button>
-      <button class="nav-btn" onclick="switchTab('hasimaru')">Coleccionables Hasimaru</button>
-      <button class="nav-btn" onclick="switchTab('haikus')">Generador Haikus</button>
-      <button class="nav-btn" onclick="switchTab('notas')">Notas</button>
+      <button class="nav-btn" onclick="switchTab('hasimaru')">Hasimaru</button>
+      <button class="nav-btn" onclick="switchTab('haikus')">Haikus</button>
+      <button class="nav-btn" onclick="switchTab('notas')">Notas General</button>
     </nav>
   </aside>
 
-  <!-- Contenido Principal -->
+  <!-- Área Principal -->
   <main class="main-content">
 
-    <!-- Sección: Inicio -->
+    <!-- Inicio -->
     <section id="page-inicio" class="page-section active">
       <div class="welcome-card">
         <h1>Bienvenido a Rokugan</h1>
         <p>
-          Sumérgete en el mundo de la Leyenda de los Cinco Anillos. Utiliza el menú superior/lateral para consultar tus cartas de bonos especiales, revisar las reliquias de la colección de Hasimaru, componer haikus o tomar notas.
+          Selecciona tu personaje en el menú lateral para acceder a su ficha, notas personales y lanzador de dados oficial d10. También puedes explorar las cartas de bonos, los coleccionables de Hasimaru y el generador de Haikus.
         </p>
-        <button class="nav-btn" style="text-align:center; display:inline-block; width:auto;" onclick="switchTab('bonos')">Explorar Bonos</button>
+        <button class="nav-btn" style="text-align:center; display:inline-block; width:auto;" onclick="switchTab('char-kasai')">Ver Personajes</button>
       </div>
     </section>
 
-    <!-- Sección: Bonos -->
+    <!-- PÁGINAS DE PERSONAJES (Generadas mediante plantilla) -->
+    <!-- Kasai -->
+    <section id="page-char-kasai" class="page-section">
+      <div class="character-container" id="char-block-kasai"></div>
+    </section>
+
+    <!-- Nite -->
+    <section id="page-char-nite" class="page-section">
+      <div class="character-container" id="char-block-nite"></div>
+    </section>
+
+    <!-- Takasi -->
+    <section id="page-char-takasi" class="page-section">
+      <div class="character-container" id="char-block-takasi"></div>
+    </section>
+
+    <!-- Ukio -->
+    <section id="page-char-ukio" class="page-section">
+      <div class="character-container" id="char-block-ukio"></div>
+    </section>
+
+    <!-- Bonos -->
     <section id="page-bonos" class="page-section">
       <div class="deck-container" id="deck-bonos"></div>
     </section>
 
-    <!-- Sección: Coleccionables Hasimaru -->
+    <!-- Hasimaru -->
     <section id="page-hasimaru" class="page-section">
       <div class="deck-container" id="deck-hasimaru"></div>
     </section>
 
-    <!-- Sección: Generador Haikus -->
+    <!-- Haikus -->
     <section id="page-haikus" class="page-section">
       <div class="haiku-columns">
-        <div class="haiku-column" id="haiku-col-1">
-          <h3>Inicio</h3>
-        </div>
-        <div class="haiku-column" id="haiku-col-2">
-          <h3>Medio</h3>
-        </div>
-        <div class="haiku-column" id="haiku-col-3">
-          <h3>Final</h3>
-        </div>
+        <div class="haiku-column" id="haiku-col-1"><h3>Inicio</h3></div>
+        <div class="haiku-column" id="haiku-col-2"><h3>Medio</h3></div>
+        <div class="haiku-column" id="haiku-col-3"><h3>Final</h3></div>
       </div>
     </section>
 
-    <!-- Sección: Notas -->
+    <!-- Notas Generales -->
     <section id="page-notas" class="page-section">
       <div class="notes-container">
-        <h2>Bloc de Notas del Samurái</h2>
-        <textarea id="samurai-notes" class="notes-textarea" placeholder="Escribe aquí tus notas, pistas o recordatorios de la partida..."></textarea>
+        <h2>Bloc de Notas General</h2>
+        <textarea id="samurai-notes" class="notes-textarea" placeholder="Escribe aquí tus notas generales de la partida..."></textarea>
       </div>
     </section>
 
   </main>
 
+  <!-- Módulo de Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAYf_qFkBwVxovQ4Sr_GMpdMaDSsTBRoY",
+      authDomain: "leyenda-de-los-5-anillos.firebaseapp.com",
+      databaseURL: "https://leyenda-de-los-5-anillos-default-rtdb.firebaseio.com",
+      projectId: "leyenda-de-los-5-anillos",
+      storageBucket: "leyenda-de-los-5-anillos.firebasestorage.app",
+      messagingSenderId: "328710946580",
+      appId: "1:328710946580:web:45ca44b42add62cd9a4c01"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Guardar tirada en la base de datos en tiempo real
+    window.saveRollToFirebase = function(charId, rollData) {
+      const rollRef = ref(db, 'rolls/' + charId);
+      set(rollRef, rollData);
+    };
+
+    // Escuchar tiradas en tiempo real de todos los jugadores
+    charactersData.forEach(char => {
+      const rollRef = ref(db, 'rolls/' + char.id);
+      onValue(rollRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const totalEl = document.getElementById(`total-${char.id}`);
+          if (totalEl) totalEl.innerText = data.totalSum;
+
+          const historyBox = document.getElementById(`history-${char.id}`);
+          if (historyBox) {
+            if (historyBox.innerHTML.includes('No hay tiradas aún')) {
+              historyBox.innerHTML = '';
+            }
+            const historyEntry = document.createElement('div');
+            historyEntry.className = 'history-entry';
+            historyEntry.innerHTML = `
+              <strong>Tirada ${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
+              <br><span style="font-size:10px;">Dados: ${data.diceDetailsStr}</span>
+            `;
+            historyBox.prepend(historyEntry);
+          }
+        }
+      });
+    });
+  </script>
+
   <script>
-    // 1. Mazo de Bonos
+    // Configuración de los 4 Personajes
+    const charactersData = [
+      { id: 'kasai', name: 'Kasai', img1: 'images/Kasai1.png', img2: 'images/Kasai2.png' },
+      { id: 'nite', name: 'Nite', img1: 'images/Nite1.png', img2: 'images/Nite2.png' },
+      { id: 'takasi', name: 'Takasi', img1: 'images/Takasi1.png', img2: 'images/Takasi2.png' },
+      { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' }
+    ];
+
+    // Mazo de Bonos
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
       { image: 'images/Bonos/termas.png', text: 'Descubre la relajación de las Termas, un lugar de tranquilidad y sanación ancestral.' },
       { image: 'images/Bonos/santuario Kitsune.png', text: 'Explora el misterioso Santuario Kitsune, hogar de los espíritus zorro legendarios.' }
     ];
 
-    // 2. Mazo Hasimaru
+    // Mazo Hasimaru
     const hasimaruDeck = [
       { image: 'images/Hasimaru/Hasimaru1.png', text: 'Festival de Hasimaru.' },
       { image: 'images/Hasimaru/Hasimaru2.png', text: 'Hermansos Goro Y Boro, guardianes del templo.' },
@@ -488,25 +761,137 @@
       { image: 'images/Hasimaru/Hasimaru10.png', text: 'Akodo Masaru.' }
     ];
 
-    // 3. Estructura de Datos para Haikus
+    // Haikus
     const haikuParts = {
-      col1: [
-        "Bajo el cerezo",
-        "El viento frío",
-        "Hoja de acero"
-      ],
-      col2: [
-        "florece la mañana",
-        "susurra entre los pinos",
-        "brilla bajo la luna"
-      ],
-      col3: [
-        "en silencio.",
-        "sin descanso.",
-        "con honor."
-      ]
+      col1: ["Bajo el cerezo", "El viento frío", "Hoja de acero"],
+      col2: ["florece la mañana", "susurra entre los pinos", "brilla bajo la luna"],
+      col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
+    // --- Construcción de las fichas de los personajes ---
+    function initCharacters() {
+      charactersData.forEach(char => {
+        const container = document.getElementById(`char-block-${char.id}`);
+        if (!container) return;
+
+        container.innerHTML = `
+          <h2 class="char-title">${char.name}</h2>
+          
+          <!-- Columna Izquierda: Imágenes y Descripción -->
+          <div class="char-left-col">
+            <div class="char-gallery">
+              <div class="char-img-wrapper">
+                <img src="${char.img1}" alt="${char.name} 1" onerror="this.src='images/icono.png'; this.style.opacity='0.3';">
+              </div>
+              <div class="char-img-wrapper">
+                <img src="${char.img2}" alt="${char.name} 2" onerror="this.src='images/icono.png'; this.style.opacity='0.3';">
+              </div>
+            </div>
+            
+            <div class="char-description-box">
+              <label>Notas / Descripción de ${char.name}:</label>
+              <textarea id="desc-${char.id}" class="char-textarea" placeholder="Escribe aquí los datos, trasfondo o habilidades de ${char.name}..."></textarea>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Lanzador de Dados L5R -->
+          <div class="char-right-col">
+            <div class="dice-roller-box">
+              <h3>Lanzador de Dados L5R</h3>
+              
+              <div class="dice-inputs">
+                <div class="input-group">
+                  <label>Tirar (d10)</label>
+                  <input type="number" id="roll-num-${char.id}" class="dice-input" value="5" min="1" max="20">
+                </div>
+                <div class="input-group">
+                  <label>Guardar</label>
+                  <input type="number" id="keep-num-${char.id}" class="dice-input" value="2" min="1" max="20">
+                </div>
+              </div>
+
+              <button class="roll-btn" onclick="rollL5RDice('${char.id}')">🎲 Lanzar Dados</button>
+
+              <div class="dice-result-total">
+                <div style="font-size:11px; color:#aaa; text-transform:uppercase;">Resultado Final</div>
+                <div class="total-number" id="total-${char.id}">0</div>
+              </div>
+
+              <div style="font-size:11px; color:#c5a059; text-transform:uppercase; font-weight:bold;">Historial de Tiradas:</div>
+              <div class="dice-history" id="history-${char.id}">
+                <div style="color:#777; font-style:italic;">No hay tiradas aún.</div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Persistencia de la descripción de cada personaje
+        const descArea = document.getElementById(`desc-${char.id}`);
+        descArea.value = localStorage.getItem(`desc_${char.id}`) || '';
+        descArea.addEventListener('input', () => {
+          localStorage.setItem(`desc_${char.id}`, descArea.value);
+        });
+      });
+    }
+
+    // --- LÓGICA DE TIRADA DE DADOS L5R ---
+    function rollL5RDice(charId) {
+      const rollNumInput = document.getElementById(`roll-num-${charId}`);
+      const keepNumInput = document.getElementById(`keep-num-${charId}`);
+      
+      let numRoll = parseInt(rollNumInput.value) || 1;
+      let numKeep = parseInt(keepNumInput.value) || 1;
+
+      if (numKeep > numRoll) numKeep = numRoll;
+
+      let diceResults = [];
+
+      for (let i = 0; i < numRoll; i++) {
+        let singleDieTotal = 0;
+        let rollsExploded = [];
+        let rollVal = 0;
+
+        do {
+          rollVal = Math.floor(Math.random() * 10) + 1;
+          singleDieTotal += rollVal;
+          rollsExploded.push(rollVal);
+        } while (rollVal === 10);
+
+        diceResults.push({
+          finalTotal: singleDieTotal,
+          breakdown: rollsExploded
+        });
+      }
+
+      diceResults.sort((a, b) => b.finalTotal - a.finalTotal);
+
+      let keptDice = diceResults.slice(0, numKeep);
+      let totalSum = keptDice.reduce((acc, d) => acc + d.finalTotal, 0);
+
+      let diceDetailsStr = diceResults.map((d, idx) => {
+        let isKept = idx < numKeep;
+        let rollText = d.breakdown.length > 1 ? `[${d.breakdown.join('+')}=${d.finalTotal}]` : `${d.finalTotal}`;
+        
+        if (d.breakdown.includes(10)) {
+          rollText = `<span class="exploded">${rollText}💥</span>`;
+        }
+        
+        return isKept ? `<span class="kept-dice">${rollText}</span>` : `<span style="opacity:0.4">${rollText}</span>`;
+      }).join(', ');
+
+      // Enviar resultado a Firebase para sincronización instantánea
+      if (typeof window.saveRollToFirebase === 'function') {
+        window.saveRollToFirebase(charId, {
+          numRoll,
+          numKeep,
+          totalSum,
+          diceDetailsStr,
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    // --- Mazo y Cartas ---
     function shuffleArray(array) {
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -562,7 +947,6 @@
       });
     }
 
-    // Renderizador exclusivo de Haikus (3 columnas)
     function renderHaikus() {
       ['col1', 'col2', 'col3'].forEach((colKey, index) => {
         const container = document.getElementById(`haiku-col-${index + 1}`);
@@ -589,7 +973,7 @@
       });
     }
 
-    // Navegación de pestañas
+    // --- Navegación entre Pestañas ---
     function switchTab(tabName) {
       const buttons = document.querySelectorAll('.nav-btn');
       buttons.forEach(btn => btn.classList.remove('active'));
@@ -616,13 +1000,13 @@
       }
     }
 
-    // Inicialización y persistencia de notas
+    // Carga inicial
     window.addEventListener('DOMContentLoaded', () => {
+      initCharacters();
       renderDeck('deck-bonos', bonosDeck, true, false);
       renderDeck('deck-hasimaru', hasimaruDeck, false, true);
       renderHaikus();
 
-      // Guardado automático del Bloc de Notas
       const notesArea = document.getElementById('samurai-notes');
       if (notesArea) {
         notesArea.value = localStorage.getItem('leyenda_notas') || '';
