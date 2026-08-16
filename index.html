@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="images/icono.png" type="image/x-icon" rel="shortcut icon" />
+  <title>Leyenda de los cinco anillos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: black;
+      background-image: url('images/bg.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+      font-size: 12px;
+      line-height: 20px;
+      color: #fff;
+    }
+
+    /* --- Menú Lateral Izquierdo --- */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 15, 15, 0.9);
+      border-right: 2px solid rgba(197, 160, 89, 0.4);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 15px;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .sidebar-header img {
+      width: 180px;
+      height: auto;
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: rgba(40, 40, 40, 0.6);
+      color: #e0d8c3;
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      padding: 14px 20px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    .nav-btn:hover {
+      background: rgba(197, 160, 89, 0.2);
+      border-color: #c5a059;
+      color: #fff;
+      transform: translateX(5px);
+    }
+
+    .nav-btn.active {
+      background: rgba(197, 160, 89, 0.35);
+      border-color: #c5a059;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+    }
+
+    /* --- Área Principal de Contenido --- */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .page-section {
+      display: none;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .page-section.active {
+      display: flex;
+    }
+
+    /* --- Vista de Inicio --- */
+    .welcome-card {
+      background: rgba(20, 20, 20, 0.85);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 40px;
+      max-width: 650px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .welcome-card h1 {
+      font-size: 24px;
+      color: #c5a059;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .welcome-card p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #d1d1d1;
+      margin-bottom: 25px;
+    }
+
+    /* --- Vista de Notas --- */
+    .notes-container {
+      width: 100%;
+      max-width: 800px;
+      height: 80vh;
+      background: rgba(15, 15, 15, 0.85);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .notes-container h2 {
+      color: #c5a059;
+      font-size: 20px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .notes-textarea {
+      flex: 1;
+      background: rgba(25, 25, 25, 0.9);
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      border-radius: 4px;
+      padding: 20px;
+      color: #e0d8c3;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+    }
+
+    .notes-textarea:focus {
+      border-color: #c5a059;
+      box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+    }
+
+    /* --- Vista de Haikus --- */
+    .haiku-columns {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .haiku-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .haiku-column h3 {
+      color: #c5a059;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .haiku-card {
+      width: 100%;
+      max-width: 240px;
+      height: 100px;
+    }
+
+    .haiku-card .card-side {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .haiku-card .card-back {
+      background-color: rgba(30, 30, 30, 0.95);
+      border: 1px solid rgba(197, 160, 89, 0.6);
+      color: #e0d8c3;
+      line-height: 1.4;
+    }
+
+    /* --- Estilos de las Cartas 3D generales --- */
+    .deck-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+      align-items: center;
+      max-width: 1400px;
+      padding: 20px 0;
+    }
+
+    .card-front:hover {
+      animation: vibrate 0.5s linear;
+    }
+
+    .card-container {
+      perspective: 1000px;
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    .card-container.bring-to-front {
+      z-index: 10;
+    }
+
+    .card {
+      width: 200px;
+      height: 280px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease, scale 0.3s ease;
+    }
+
+    .card.zoom {
+      transform: scale(1.8) rotateY(180deg);
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 6px;
+    }
+
+    .card-front {
+      background-image: url('images/Bonos/frontal.png');
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+    }
+
+    .card-info {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      padding: 10px;
+      background-color: rgba(30, 30, 30, 0.9);
+      color: white;
+      border: 1px solid rgba(197, 160, 89, 0.6);
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.3;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.6s, opacity 0.6s;
+      z-index: 11;
+      pointer-events: none;
+    }
+
+    .card-container.bring-to-front .card-info {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @keyframes vibrate {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-8px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Lateral de Navegación -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="images/logoes.png" alt="Logo Leyenda de los Cinco Anillos">
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" onclick="switchTab('inicio')">Inicio</button>
+      <button class="nav-btn" onclick="switchTab('bonos')">Bonos</button>
+      <button class="nav-btn" onclick="switchTab('hasimaru')">Coleccionables Hasimaru</button>
+      <button class="nav-btn" onclick="switchTab('haikus')">Generador Haikus</button>
+      <button class="nav-btn" onclick="switchTab('notas')">Notas</button>
+    </nav>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="main-content">
+
+    <!-- Sección: Inicio -->
+    <section id="page-inicio" class="page-section active">
+      <div class="welcome-card">
+        <h1>Bienvenido a Rokugan</h1>
+        <p>
+          Sumérgete en el mundo de la Leyenda de los Cinco Anillos. Utiliza el menú lateral para consultar tus cartas de bonos especiales, revisar las reliquias de la colección de Hasimaru, componer haikus o tomar notas.
+        </p>
+        <button class="nav-btn" style="text-align:center; display:inline-block;" onclick="switchTab('bonos')">Explorar Bonos</button>
+      </div>
+    </section>
+
+    <!-- Sección: Bonos -->
+    <section id="page-bonos" class="page-section">
+      <div class="deck-container" id="deck-bonos"></div>
+    </section>
+
+    <!-- Sección: Coleccionables Hasimaru -->
+    <section id="page-hasimaru" class="page-section">
+      <div class="deck-container" id="deck-hasimaru"></div>
+    </section>
+
+    <!-- Sección: Generador Haikus -->
+    <section id="page-haikus" class="page-section">
+      <div class="haiku-columns">
+        <div class="haiku-column" id="haiku-col-1">
+          <h3>Inicio</h3>
+        </div>
+        <div class="haiku-column" id="haiku-col-2">
+          <h3>Medio</h3>
+        </div>
+        <div class="haiku-column" id="haiku-col-3">
+          <h3>Final</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección: Notas -->
+    <section id="page-notas" class="page-section">
+      <div class="notes-container">
+        <h2>Bloc de Notas del Samurái</h2>
+        <textarea id="samurai-notes" class="notes-textarea" placeholder="Escribe aquí tus notas, pistas o recordatorios de la partida..."></textarea>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // 1. Mazo de Bonos
+    const bonosDeck = [
+      { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
+      { image: 'images/Bonos/termas.png', text: 'Descubre la relajación de las Termas, un lugar de tranquilidad y sanación ancestral.' },
+      { image: 'images/Bonos/santuario Kitsune.png', text: 'Explora el misterioso Santuario Kitsune, hogar de los espíritus zorro legendarios.' }
+    ];
+
+    // 2. Mazo Hasimaru
+    const hasimaruDeck = [
+      { image: 'images/Hasimaru/Hasimaru1.png', text: 'Festival de Hasimaru.' },
+      { image: 'images/Hasimaru/Hasimaru2.png', text: 'Hermansos Goro Y Boro, guardianes del templo.' },
+      { image: 'images/Hasimaru/Hasimaru3.png', text: 'El origen del los Kami.' },
+      { image: 'images/Hasimaru/Hasimaru4.png', text: 'Duelista estrella.' },
+      { image: 'images/Hasimaru/Hasimaru5.png', text: 'Poeta.' },
+      { image: 'images/Hasimaru/Hasimaru6.png', text: 'Sabotaje.' },
+      { image: 'images/Hasimaru/Hasimaru7.png', text: 'Bebida envenenada.' },
+      { image: 'images/Hasimaru/Hasimaru8.png', text: 'Cultivos secretos.' },
+      { image: 'images/Hasimaru/Hasimaru9.png', text: 'Takezo.' },
+      { image: 'images/Hasimaru/Hasimaru10.png', text: 'Akodo Masaru.' }
+    ];
+
+    // 3. Estructura de Datos para Haikus
+    const haikuParts = {
+      col1: [
+        "Bajo el cerezo",
+        "El viento frío",
+        "Hoja de acero"
+      ],
+      col2: [
+        "florece la mañana",
+        "susurra entre los pinos",
+        "brilla bajo la luna"
+      ],
+      col3: [
+        "en silencio.",
+        "sin descanso.",
+        "con honor."
+      ]
+    };
+
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function renderDeck(containerId, deckData, shouldShuffle = false, isHasimaru = false) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = ''; 
+      
+      const deckToRender = shouldShuffle ? shuffleArray(deckData) : deckData;
+
+      deckToRender.forEach((cardData) => {
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'card-container';
+
+        cardContainer.innerHTML = `
+          <div class="card">
+            <div class="card-side card-front"></div>
+            <div class="card-side card-back" style="background-image: url('${cardData.image}');"></div>
+          </div>
+          <div class="card-info">
+            <p>${cardData.text}</p>
+          </div>
+        `;
+
+        cardContainer.addEventListener('click', () => {
+          const card = cardContainer.querySelector('.card');
+
+          if (isHasimaru) {
+            card.classList.toggle('flipped');
+            cardContainer.classList.toggle('bring-to-front');
+          } else {
+            const isZoomed = card.classList.contains('zoom');
+            const allContainers = container.querySelectorAll('.card-container');
+
+            allContainers.forEach(other => {
+              other.querySelector('.card').classList.remove('zoom');
+              other.classList.remove('bring-to-front');
+            });
+
+            if (!isZoomed) {
+              card.classList.add('zoom');
+              cardContainer.classList.add('bring-to-front');
+            }
+          }
+        });
+
+        container.appendChild(cardContainer);
+      });
+    }
+
+    // Renderizador exclusivo de Haikus (3 columnas)
+    function renderHaikus() {
+      ['col1', 'col2', 'col3'].forEach((colKey, index) => {
+        const container = document.getElementById(`haiku-col-${index + 1}`);
+        container.querySelectorAll('.card-container').forEach(el => el.remove());
+
+        haikuParts[colKey].forEach((text) => {
+          const cardContainer = document.createElement('div');
+          cardContainer.className = 'card-container haiku-card';
+
+          cardContainer.innerHTML = `
+            <div class="card" style="width: 100%; height: 100%;">
+              <div class="card-side card-front"></div>
+              <div class="card-side card-back">${text}</div>
+            </div>
+          `;
+
+          cardContainer.addEventListener('click', () => {
+            const card = cardContainer.querySelector('.card');
+            card.classList.toggle('flipped');
+          });
+
+          container.appendChild(cardContainer);
+        });
+      });
+    }
+
+    // Navegación de pestañas
+    function switchTab(tabName) {
+      const buttons = document.querySelectorAll('.nav-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      const sections = document.querySelectorAll('.page-section');
+      sections.forEach(section => section.classList.remove('active'));
+
+      const activeSection = document.getElementById(`page-${tabName}`);
+      if (activeSection) {
+        activeSection.classList.add('active');
+      }
+
+      const activeBtn = Array.from(buttons).find(btn => 
+        btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)
+      );
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabName === 'bonos') {
+        renderDeck('deck-bonos', bonosDeck, true, false);
+      } else if (tabName === 'hasimaru') {
+        renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      } else if (tabName === 'haikus') {
+        renderHaikus();
+      }
+    }
+
+    // Inicialización y persistencia de notas
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDeck('deck-bonos', bonosDeck, true, false);
+      renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      renderHaikus();
+
+      // Guardado automático del Bloc de Notas
+      const notesArea = document.getElementById('samurai-notes');
+      if (notesArea) {
+        notesArea.value = localStorage.getItem('leyenda_notas') || '';
+        notesArea.addEventListener('input', () => {
+          localStorage.setItem('leyenda_notas', notesArea.value);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
