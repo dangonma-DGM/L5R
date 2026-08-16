@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link href="images/icono.png" type="image/x-icon" rel="shortcut icon" />
-  <title>Leyenda de los cinco anillos</title>
+  <title>Leyenda de los Cinco Anillos - Mesa de Juego</title>
   <style>
     * {
       box-sizing: border-box;
@@ -29,7 +29,7 @@
 
     /* --- Menú Lateral Izquierdo --- */
     .sidebar {
-      width: 260px;
+      width: 240px;
       background: rgba(15, 15, 15, 0.95);
       border-right: 2px solid rgba(197, 160, 89, 0.4);
       display: flex;
@@ -46,7 +46,7 @@
     }
 
     .sidebar-header img {
-      width: 160px;
+      width: 150px;
       max-width: 100%;
       height: auto;
       filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
@@ -74,7 +74,7 @@
       color: #e0d8c3;
       border: 1px solid rgba(197, 160, 89, 0.3);
       padding: 10px 15px;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 1.2px;
       cursor: pointer;
@@ -97,13 +97,13 @@
       box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
     }
 
-    /* --- Área Principal de Contenido --- */
+    /* --- Área Principal --- */
     .main-content {
       flex: 1;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 30px;
+      align-items: flex-start;
+      padding: 25px;
       position: relative;
       overflow-y: auto;
     }
@@ -111,50 +111,181 @@
     .page-section {
       display: none;
       width: 100%;
-      height: 100%;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
+      align-items: center;
     }
 
     .page-section.active {
       display: flex;
     }
 
-    /* --- Vista de Inicio --- */
-    .welcome-card {
-      background: rgba(20, 20, 20, 0.85);
+    /* --- PANEL DE DADOS COMÚN (MESA GENERAL) --- */
+    .table-title {
+      text-align: center;
+      color: #c5a059;
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+      border-bottom: 2px solid rgba(197, 160, 89, 0.4);
+      padding-bottom: 10px;
+      width: 100%;
+      max-width: 1300px;
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1300px;
+      margin-bottom: 30px;
+    }
+
+    .player-card {
+      background: rgba(15, 15, 15, 0.9);
       border: 1px solid rgba(197, 160, 89, 0.5);
       border-radius: 8px;
-      padding: 40px;
-      max-width: 650px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(5px);
     }
 
-    .welcome-card h1 {
-      font-size: 24px;
+    .player-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px solid #c5a059;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+      background: rgba(30, 30, 30, 0.8);
+    }
+
+    .player-name {
       color: #c5a059;
-      margin-bottom: 20px;
-      letter-spacing: 2px;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* Lanzador dentro de la carta del jugador */
+    .dice-roller-box {
+      width: 100%;
+      background: rgba(25, 25, 25, 0.9);
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dice-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: space-around;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .input-group label {
+      font-size: 10px;
+      color: #aaa;
       text-transform: uppercase;
     }
 
-    .welcome-card p {
+    .dice-input {
+      width: 50px;
+      background: #111;
+      border: 1px solid #c5a059;
+      color: #fff;
+      text-align: center;
+      padding: 5px;
       font-size: 14px;
-      line-height: 1.8;
-      color: #d1d1d1;
-      margin-bottom: 25px;
+      font-weight: bold;
+      border-radius: 4px;
+      outline: none;
     }
 
-    /* --- Plantilla de Ficha de Personaje --- */
+    .roll-btn {
+      background: linear-gradient(180deg, #c5a059 0%, #8a6d33 100%);
+      color: #000;
+      border: none;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .roll-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .dice-result-total {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #c5a059;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .dice-result-total .total-number {
+      font-size: 26px;
+      font-weight: bold;
+      color: #55ff55;
+      line-height: 1.1;
+    }
+
+    .dice-history {
+      max-height: 120px;
+      overflow-y: auto;
+      background: rgba(10, 10, 10, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .history-entry {
+      border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
+      padding-bottom: 3px;
+    }
+
+    .history-entry .kept-dice {
+      color: #c5a059;
+      font-weight: bold;
+    }
+
+    .history-entry .exploded {
+      color: #ff5555;
+    }
+
+    /* --- Plantilla Individual de Personaje --- */
     .character-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       width: 100%;
-      max-width: 1100px;
+      max-width: 1000px;
       background: rgba(15, 15, 15, 0.88);
       border: 1px solid rgba(197, 160, 89, 0.5);
       border-radius: 8px;
@@ -172,16 +303,8 @@
       text-align: center;
       border-bottom: 1px solid rgba(197, 160, 89, 0.3);
       padding-bottom: 10px;
-      margin-bottom: 10px;
     }
 
-    .char-left-col, .char-right-col {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Galería de imágenes del personaje */
     .char-gallery {
       display: flex;
       gap: 15px;
@@ -190,14 +313,11 @@
 
     .char-img-wrapper {
       width: 50%;
-      height: 220px;
+      height: 200px;
       border: 1px solid rgba(197, 160, 89, 0.4);
       border-radius: 6px;
       overflow: hidden;
       background: rgba(30, 30, 30, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .char-img-wrapper img {
@@ -206,25 +326,9 @@
       object-fit: cover;
     }
 
-    /* Cuadro Descriptivo */
-    .char-description-box {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .char-description-box label {
-      color: #c5a059;
-      font-weight: bold;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-size: 12px;
-    }
-
     .char-textarea {
       width: 100%;
-      height: 180px;
+      height: 200px;
       background: rgba(25, 25, 25, 0.9);
       border: 1px solid rgba(197, 160, 89, 0.3);
       border-radius: 4px;
@@ -241,120 +345,7 @@
       border-color: #c5a059;
     }
 
-    /* Panel de Lanzador de Dados */
-    .dice-roller-box {
-      background: rgba(25, 25, 25, 0.9);
-      border: 1px solid rgba(197, 160, 89, 0.4);
-      border-radius: 6px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .dice-roller-box h3 {
-      color: #c5a059;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-size: 14px;
-      text-align: center;
-      border-bottom: 1px dashed rgba(197, 160, 89, 0.3);
-      padding-bottom: 8px;
-    }
-
-    .dice-inputs {
-      display: flex;
-      gap: 15px;
-      justify-content: space-around;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .input-group label {
-      font-size: 11px;
-      color: #aaa;
-      text-transform: uppercase;
-    }
-
-    .dice-input {
-      width: 60px;
-      background: #111;
-      border: 1px solid #c5a059;
-      color: #fff;
-      text-align: center;
-      padding: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    .roll-btn {
-      background: linear-gradient(180deg, #c5a059 0%, #8a6d33 100%);
-      color: #000;
-      border: none;
-      padding: 12px;
-      font-weight: bold;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .roll-btn:hover {
-      filter: brightness(1.2);
-    }
-
-    .dice-result-total {
-      text-align: center;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid #c5a059;
-      padding: 10px;
-      border-radius: 4px;
-    }
-
-    .dice-result-total .total-number {
-      font-size: 28px;
-      font-weight: bold;
-      color: #55ff55;
-      line-height: 1.2;
-    }
-
-    .dice-history {
-      max-height: 150px;
-      overflow-y: auto;
-      background: rgba(10, 10, 10, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      padding: 10px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .history-entry {
-      border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
-      padding-bottom: 4px;
-    }
-
-    .history-entry .kept-dice {
-      color: #c5a059;
-      font-weight: bold;
-    }
-
-    .history-entry .exploded {
-      color: #ff5555;
-    }
-
-    /* --- Vista de Notas --- */
+    /* --- Notas --- */
     .notes-container {
       width: 100%;
       max-width: 800px;
@@ -392,12 +383,7 @@
       outline: none;
     }
 
-    .notes-textarea:focus {
-      border-color: #c5a059;
-      box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
-    }
-
-    /* --- Vista de Haikus --- */
+    /* --- Haikus --- */
     .haiku-columns {
       display: flex;
       gap: 20px;
@@ -445,7 +431,7 @@
       line-height: 1.4;
     }
 
-    /* --- Estilos de Cartas --- */
+    /* --- Cartas --- */
     .deck-container {
       display: flex;
       flex-wrap: wrap;
@@ -469,8 +455,8 @@
     }
 
     .card {
-      width: 200px;
-      height: 280px;
+      width: 180px;
+      height: 250px;
       position: relative;
       transform-style: preserve-3d;
       transition: transform 0.6s ease, scale 0.3s ease;
@@ -515,7 +501,7 @@
       border: 1px solid rgba(197, 160, 89, 0.6);
       border-radius: 6px;
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       line-height: 1.3;
       visibility: hidden;
       opacity: 0;
@@ -530,7 +516,13 @@
       pointer-events: auto;
     }
 
-    /* --- Adaptativo (Responsive) --- */
+    /* --- Responsive --- */
+    @media (max-width: 1024px) {
+      .players-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     @media (max-width: 768px) {
       body {
         flex-direction: column;
@@ -543,10 +535,6 @@
         padding: 15px 10px;
       }
 
-      .sidebar-header img {
-        width: 120px;
-      }
-
       .sidebar-nav {
         flex-direction: row;
         flex-wrap: wrap;
@@ -554,55 +542,38 @@
         gap: 6px;
       }
 
-      .nav-group-title {
-        width: 100%;
-        text-align: center;
-        margin: 5px 0;
-      }
-
       .nav-btn {
         padding: 8px 10px;
         font-size: 10px;
-        text-align: center;
         flex: 1 1 calc(33% - 10px);
+        text-align: center;
       }
 
-      .main-content {
-        padding: 15px 8px;
+      .players-grid {
+        grid-template-columns: 1fr;
       }
 
       .character-container {
         grid-template-columns: 1fr;
-        padding: 15px;
       }
 
       .haiku-columns {
         flex-direction: column;
-        align-items: center;
-      }
-
-      .haiku-column {
-        width: 100%;
-        max-width: 280px;
-      }
-
-      .card.zoom {
-        transform: scale(1.25) rotateY(180deg);
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Barra Lateral de Navegación -->
+  <!-- Barra Lateral -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <img src="images/logoes.png" alt="Logo Leyenda de los Cinco Anillos">
+      <img src="images/logoes.png" alt="Logo L5R">
     </div>
     <nav class="sidebar-nav">
-      <button class="nav-btn active" onclick="switchTab('inicio')">Inicio</button>
+      <button class="nav-btn active" onclick="switchTab('inicio')">🎲 Mesa de Dados</button>
       
-      <div class="nav-group-title">Personajes</div>
+      <div class="nav-group-title">Fichas</div>
       <button class="nav-btn" onclick="switchTab('char-kasai')">Kasai</button>
       <button class="nav-btn" onclick="switchTab('char-nite')">Nite</button>
       <button class="nav-btn" onclick="switchTab('char-takasi')">Takasi</button>
@@ -619,49 +590,43 @@
   <!-- Área Principal -->
   <main class="main-content">
 
-    <!-- Inicio -->
+    <!-- PÁGINA PRINCIPAL: MESA COMÚN DE DADOS -->
     <section id="page-inicio" class="page-section active">
-      <div class="welcome-card">
-        <h1>Bienvenido a Rokugan</h1>
-        <p>
-          Selecciona tu personaje en el menú lateral para acceder a su ficha, notas personales y lanzador de dados oficial d10. También puedes explorar las cartas de bonos, los coleccionables de Hasimaru y el generador de Haikus.
-        </p>
-        <button class="nav-btn" style="text-align:center; display:inline-block; width:auto;" onclick="switchTab('char-kasai')">Ver Personajes</button>
+      <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
+      
+      <div class="players-grid" id="main-dice-grid">
+        <!-- Generado dinámicamente con las fotos y datos de los 4 jugadores -->
       </div>
     </section>
 
-    <!-- PÁGINAS DE PERSONAJES (Generadas mediante plantilla) -->
-    <!-- Kasai -->
+    <!-- PÁGINAS DE FICHAS INDIVIDUALES -->
     <section id="page-char-kasai" class="page-section">
       <div class="character-container" id="char-block-kasai"></div>
     </section>
 
-    <!-- Nite -->
     <section id="page-char-nite" class="page-section">
       <div class="character-container" id="char-block-nite"></div>
     </section>
 
-    <!-- Takasi -->
     <section id="page-char-takasi" class="page-section">
       <div class="character-container" id="char-block-takasi"></div>
     </section>
 
-    <!-- Ukio -->
     <section id="page-char-ukio" class="page-section">
       <div class="character-container" id="char-block-ukio"></div>
     </section>
 
-    <!-- Bonos -->
+    <!-- BONOS -->
     <section id="page-bonos" class="page-section">
       <div class="deck-container" id="deck-bonos"></div>
     </section>
 
-    <!-- Hasimaru -->
+    <!-- HASIMARU -->
     <section id="page-hasimaru" class="page-section">
       <div class="deck-container" id="deck-hasimaru"></div>
     </section>
 
-    <!-- Haikus -->
+    <!-- HAIKUS -->
     <section id="page-haikus" class="page-section">
       <div class="haiku-columns">
         <div class="haiku-column" id="haiku-col-1"><h3>Inicio</h3></div>
@@ -670,17 +635,17 @@
       </div>
     </section>
 
-    <!-- Notas Generales -->
+    <!-- NOTAS GENERALES -->
     <section id="page-notas" class="page-section">
       <div class="notes-container">
         <h2>Bloc de Notas General</h2>
-        <textarea id="samurai-notes" class="notes-textarea" placeholder="Escribe aquí tus notas generales de la partida..."></textarea>
+        <textarea id="samurai-notes" class="notes-textarea" placeholder="Escribe aquí las notas compartidas de la partida..."></textarea>
       </div>
     </section>
 
   </main>
 
-  <!-- Módulo de Firebase -->
+  <!-- Módulo Firebase de Conexión en Tiempo Real -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -698,13 +663,13 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Guardar tirada en la base de datos en tiempo real
+    // Enviar tirada a Firebase al hacer clic
     window.saveRollToFirebase = function(charId, rollData) {
       const rollRef = ref(db, 'rolls/' + charId);
       set(rollRef, rollData);
     };
 
-    // Escuchar tiradas en tiempo real de todos los jugadores
+    // Escuchar actualizaciones en tiempo real para actualizar la mesa de todos
     charactersData.forEach(char => {
       const rollRef = ref(db, 'rolls/' + char.id);
       onValue(rollRef, (snapshot) => {
@@ -715,14 +680,14 @@
 
           const historyBox = document.getElementById(`history-${char.id}`);
           if (historyBox) {
-            if (historyBox.innerHTML.includes('No hay tiradas aún')) {
+            if (historyBox.innerHTML.includes('Sin tiradas')) {
               historyBox.innerHTML = '';
             }
             const historyEntry = document.createElement('div');
             historyEntry.className = 'history-entry';
             historyEntry.innerHTML = `
-              <strong>Tirada ${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
-              <br><span style="font-size:10px;">Dados: ${data.diceDetailsStr}</span>
+              <strong>${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
+              <br><span style="font-size:9px;">Dados: ${data.diceDetailsStr}</span>
             `;
             historyBox.prepend(historyEntry);
           }
@@ -732,7 +697,7 @@
   </script>
 
   <script>
-    // Configuración de los 4 Personajes
+    // Datos de los 4 Personajes
     const charactersData = [
       { id: 'kasai', name: 'Kasai', img1: 'images/Kasai1.png', img2: 'images/Kasai2.png' },
       { id: 'nite', name: 'Nite', img1: 'images/Nite1.png', img2: 'images/Nite2.png' },
@@ -740,14 +705,12 @@
       { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' }
     ];
 
-    // Mazo de Bonos
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
       { image: 'images/Bonos/termas.png', text: 'Descubre la relajación de las Termas, un lugar de tranquilidad y sanación ancestral.' },
       { image: 'images/Bonos/santuario Kitsune.png', text: 'Explora el misterioso Santuario Kitsune, hogar de los espíritus zorro legendarios.' }
     ];
 
-    // Mazo Hasimaru
     const hasimaruDeck = [
       { image: 'images/Hasimaru/Hasimaru1.png', text: 'Festival de Hasimaru.' },
       { image: 'images/Hasimaru/Hasimaru2.png', text: 'Hermansos Goro Y Boro, guardianes del templo.' },
@@ -761,14 +724,53 @@
       { image: 'images/Hasimaru/Hasimaru10.png', text: 'Akodo Masaru.' }
     ];
 
-    // Haikus
     const haikuParts = {
       col1: ["Bajo el cerezo", "El viento frío", "Hoja de acero"],
       col2: ["florece la mañana", "susurra entre los pinos", "brilla bajo la luna"],
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
-    // --- Construcción de las fichas de los personajes ---
+    // Renderizar la mesa principal con los 4 jugadores
+    function renderMainTable() {
+      const grid = document.getElementById('main-dice-grid');
+      grid.innerHTML = '';
+
+      charactersData.forEach(char => {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.innerHTML = `
+          <img src="${char.img1}" alt="${char.name}" class="player-avatar" onerror="this.src='images/icono.png';">
+          <div class="player-name">${char.name}</div>
+
+          <div class="dice-roller-box">
+            <div class="dice-inputs">
+              <div class="input-group">
+                <label>Tirar</label>
+                <input type="number" id="roll-num-${char.id}" class="dice-input" value="5" min="1" max="20">
+              </div>
+              <div class="input-group">
+                <label>Guardar</label>
+                <input type="number" id="keep-num-${char.id}" class="dice-input" value="2" min="1" max="20">
+              </div>
+            </div>
+
+            <button class="roll-btn" onclick="rollL5RDice('${char.id}')">🎲 Lanzar Dados</button>
+
+            <div class="dice-result-total">
+              <div style="font-size:9px; color:#aaa; text-transform:uppercase;">Resultado</div>
+              <div class="total-number" id="total-${char.id}">0</div>
+            </div>
+
+            <div class="dice-history" id="history-${char.id}">
+              <div style="color:#777; font-style:italic;">Sin tiradas aún.</div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Renderizar las fichas individuales
     function initCharacters() {
       charactersData.forEach(char => {
         const container = document.getElementById(`char-block-${char.id}`);
@@ -776,56 +778,20 @@
 
         container.innerHTML = `
           <h2 class="char-title">${char.name}</h2>
-          
-          <!-- Columna Izquierda: Imágenes y Descripción -->
-          <div class="char-left-col">
-            <div class="char-gallery">
-              <div class="char-img-wrapper">
-                <img src="${char.img1}" alt="${char.name} 1" onerror="this.src='images/icono.png'; this.style.opacity='0.3';">
-              </div>
-              <div class="char-img-wrapper">
-                <img src="${char.img2}" alt="${char.name} 2" onerror="this.src='images/icono.png'; this.style.opacity='0.3';">
-              </div>
+          <div class="char-gallery">
+            <div class="char-img-wrapper">
+              <img src="${char.img1}" alt="${char.name} 1" onerror="this.src='images/icono.png';">
             </div>
-            
-            <div class="char-description-box">
-              <label>Notas / Descripción de ${char.name}:</label>
-              <textarea id="desc-${char.id}" class="char-textarea" placeholder="Escribe aquí los datos, trasfondo o habilidades de ${char.name}..."></textarea>
+            <div class="char-img-wrapper">
+              <img src="${char.img2}" alt="${char.name} 2" onerror="this.src='images/icono.png';">
             </div>
           </div>
-
-          <!-- Columna Derecha: Lanzador de Dados L5R -->
-          <div class="char-right-col">
-            <div class="dice-roller-box">
-              <h3>Lanzador de Dados L5R</h3>
-              
-              <div class="dice-inputs">
-                <div class="input-group">
-                  <label>Tirar (d10)</label>
-                  <input type="number" id="roll-num-${char.id}" class="dice-input" value="5" min="1" max="20">
-                </div>
-                <div class="input-group">
-                  <label>Guardar</label>
-                  <input type="number" id="keep-num-${char.id}" class="dice-input" value="2" min="1" max="20">
-                </div>
-              </div>
-
-              <button class="roll-btn" onclick="rollL5RDice('${char.id}')">🎲 Lanzar Dados</button>
-
-              <div class="dice-result-total">
-                <div style="font-size:11px; color:#aaa; text-transform:uppercase;">Resultado Final</div>
-                <div class="total-number" id="total-${char.id}">0</div>
-              </div>
-
-              <div style="font-size:11px; color:#c5a059; text-transform:uppercase; font-weight:bold;">Historial de Tiradas:</div>
-              <div class="dice-history" id="history-${char.id}">
-                <div style="color:#777; font-style:italic;">No hay tiradas aún.</div>
-              </div>
-            </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="color:#c5a059; font-weight:bold;">FICHA Y NOTAS DE ${char.name.toUpperCase()}:</label>
+            <textarea id="desc-${char.id}" class="char-textarea" placeholder="Datos, ventajas o historial del personaje..."></textarea>
           </div>
         `;
 
-        // Persistencia de la descripción de cada personaje
         const descArea = document.getElementById(`desc-${char.id}`);
         descArea.value = localStorage.getItem(`desc_${char.id}`) || '';
         descArea.addEventListener('input', () => {
@@ -834,7 +800,7 @@
       });
     }
 
-    // --- LÓGICA DE TIRADA DE DADOS L5R ---
+    // Lógica del sistema $XgY$ para Leyenda de los Cinco Anillos
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
@@ -879,7 +845,6 @@
         return isKept ? `<span class="kept-dice">${rollText}</span>` : `<span style="opacity:0.4">${rollText}</span>`;
       }).join(', ');
 
-      // Enviar resultado a Firebase para sincronización instantánea
       if (typeof window.saveRollToFirebase === 'function') {
         window.saveRollToFirebase(charId, {
           numRoll,
@@ -891,12 +856,12 @@
       }
     }
 
-    // --- Mazo y Cartas ---
+    // Barajar
     function shuffleArray(array) {
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
+        [copy[i], copy[j]] = [copy[i], copy[j]];
       }
       return copy;
     }
@@ -904,38 +869,30 @@
     function renderDeck(containerId, deckData, shouldShuffle = false, isHasimaru = false) {
       const container = document.getElementById(containerId);
       container.innerHTML = ''; 
-      
       const deckToRender = shouldShuffle ? shuffleArray(deckData) : deckData;
 
       deckToRender.forEach((cardData) => {
         const cardContainer = document.createElement('div');
         cardContainer.className = 'card-container';
-
         cardContainer.innerHTML = `
           <div class="card">
             <div class="card-side card-front"></div>
             <div class="card-side card-back" style="background-image: url('${cardData.image}');"></div>
           </div>
-          <div class="card-info">
-            <p>${cardData.text}</p>
-          </div>
+          <div class="card-info"><p>${cardData.text}</p></div>
         `;
 
         cardContainer.addEventListener('click', () => {
           const card = cardContainer.querySelector('.card');
-
           if (isHasimaru) {
             card.classList.toggle('flipped');
             cardContainer.classList.toggle('bring-to-front');
           } else {
             const isZoomed = card.classList.contains('zoom');
-            const allContainers = container.querySelectorAll('.card-container');
-
-            allContainers.forEach(other => {
+            container.querySelectorAll('.card-container').forEach(other => {
               other.querySelector('.card').classList.remove('zoom');
               other.classList.remove('bring-to-front');
             });
-
             if (!isZoomed) {
               card.classList.add('zoom');
               cardContainer.classList.add('bring-to-front');
@@ -955,17 +912,15 @@
         haikuParts[colKey].forEach((text) => {
           const cardContainer = document.createElement('div');
           cardContainer.className = 'card-container haiku-card';
-
           cardContainer.innerHTML = `
-            <div class="card" style="width: 100%; height: 100%;">
+            <div class="card" style="width:100%; height:100%;">
               <div class="card-side card-front"></div>
               <div class="card-side card-back">${text}</div>
             </div>
           `;
 
           cardContainer.addEventListener('click', () => {
-            const card = cardContainer.querySelector('.card');
-            card.classList.toggle('flipped');
+            cardContainer.querySelector('.card').classList.toggle('flipped');
           });
 
           container.appendChild(cardContainer);
@@ -973,35 +928,27 @@
       });
     }
 
-    // --- Navegación entre Pestañas ---
+    // Cambiar Pestañas
     function switchTab(tabName) {
-      const buttons = document.querySelectorAll('.nav-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-
-      const sections = document.querySelectorAll('.page-section');
-      sections.forEach(section => section.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
 
       const activeSection = document.getElementById(`page-${tabName}`);
-      if (activeSection) {
-        activeSection.classList.add('active');
-      }
+      if (activeSection) activeSection.classList.add('active');
 
-      const activeBtn = Array.from(buttons).find(btn => 
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
         btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)
       );
       if (activeBtn) activeBtn.classList.add('active');
 
-      if (tabName === 'bonos') {
-        renderDeck('deck-bonos', bonosDeck, true, false);
-      } else if (tabName === 'hasimaru') {
-        renderDeck('deck-hasimaru', hasimaruDeck, false, true);
-      } else if (tabName === 'haikus') {
-        renderHaikus();
-      }
+      if (tabName === 'bonos') renderDeck('deck-bonos', bonosDeck, true, false);
+      else if (tabName === 'hasimaru') renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      else if (tabName === 'haikus') renderHaikus();
     }
 
-    // Carga inicial
+    // Inicio
     window.addEventListener('DOMContentLoaded', () => {
+      renderMainTable();
       initCharacters();
       renderDeck('deck-bonos', bonosDeck, true, false);
       renderDeck('deck-hasimaru', hasimaruDeck, false, true);
