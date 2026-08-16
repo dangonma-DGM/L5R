@@ -27,10 +27,10 @@
       color: #fff;
     }
 
-    /* --- Menú Lateral Izquierdo --- */
+    /* --- Menú Lateral Izquierdo (Ordenador) --- */
     .sidebar {
       width: 260px;
-      background: rgba(15, 15, 15, 0.9);
+      background: rgba(15, 15, 15, 0.95);
       border-right: 2px solid rgba(197, 160, 89, 0.4);
       display: flex;
       flex-direction: column;
@@ -42,11 +42,12 @@
 
     .sidebar-header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .sidebar-header img {
       width: 180px;
+      max-width: 100%;
       height: auto;
       filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
     }
@@ -76,7 +77,6 @@
       background: rgba(197, 160, 89, 0.2);
       border-color: #c5a059;
       color: #fff;
-      transform: translateX(5px);
     }
 
     .nav-btn.active {
@@ -92,7 +92,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 40px;
+      padding: 30px;
       position: relative;
       overflow-y: auto;
     }
@@ -141,7 +141,7 @@
     .notes-container {
       width: 100%;
       max-width: 800px;
-      height: 80vh;
+      height: 75vh;
       background: rgba(15, 15, 15, 0.85);
       border: 1px solid rgba(197, 160, 89, 0.5);
       border-radius: 8px;
@@ -183,7 +183,7 @@
     /* --- Vista de Haikus --- */
     .haiku-columns {
       display: flex;
-      gap: 30px;
+      gap: 20px;
       justify-content: center;
       width: 100%;
       max-width: 1200px;
@@ -232,11 +232,12 @@
     .deck-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 40px;
+      gap: 30px;
       justify-content: center;
       align-items: center;
       max-width: 1400px;
       padding: 20px 0;
+      width: 100%;
     }
 
     .card-front:hover {
@@ -263,7 +264,7 @@
     }
 
     .card.zoom {
-      transform: scale(1.8) rotateY(180deg);
+      transform: scale(1.6) rotateY(180deg);
     }
 
     .card.flipped {
@@ -323,6 +324,81 @@
       75% { transform: translateX(-8px); }
       100% { transform: translateX(0); }
     }
+
+    /* =========================================================
+       DISEÑO ADAPTATIVO PARA MÓVILES Y PANTALLAS PEQUEÑAS (RESPONSIVE)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column; /* Pasa el menú arriba y el contenido abajo */
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid rgba(197, 160, 89, 0.4);
+        padding: 15px 10px;
+      }
+
+      .sidebar-header {
+        margin-bottom: 15px;
+      }
+
+      .sidebar-header img {
+        width: 130px;
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        text-align: center;
+        flex: 1 1 calc(50% - 10px); /* 2 botones por fila en móviles */
+      }
+
+      .main-content {
+        padding: 20px 10px;
+      }
+
+      .welcome-card {
+        padding: 20px;
+      }
+
+      .welcome-card h1 {
+        font-size: 18px;
+      }
+
+      .welcome-card p {
+        font-size: 13px;
+      }
+
+      /* Ajustes de Haikus para móvil */
+      .haiku-columns {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .haiku-column {
+        width: 100%;
+        max-width: 280px;
+      }
+
+      /* Ajustes de escala de cartas en Zoom para móvil para que no se salgan */
+      .card.zoom {
+        transform: scale(1.25) rotateY(180deg);
+      }
+
+      .notes-container {
+        height: 70vh;
+        padding: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -349,9 +425,9 @@
       <div class="welcome-card">
         <h1>Bienvenido a Rokugan</h1>
         <p>
-          Sumérgete en el mundo de la Leyenda de los Cinco Anillos. Utiliza el menú lateral para consultar tus cartas de bonos especiales, revisar las reliquias de la colección de Hasimaru, componer haikus o tomar notas.
+          Sumérgete en el mundo de la Leyenda de los Cinco Anillos. Utiliza el menú superior/lateral para consultar tus cartas de bonos especiales, revisar las reliquias de la colección de Hasimaru, componer haikus o tomar notas.
         </p>
-        <button class="nav-btn" style="text-align:center; display:inline-block;" onclick="switchTab('bonos')">Explorar Bonos</button>
+        <button class="nav-btn" style="text-align:center; display:inline-block; width:auto;" onclick="switchTab('bonos')">Explorar Bonos</button>
       </div>
     </section>
 
