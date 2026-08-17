@@ -136,10 +136,10 @@
 
     .players-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
       width: 100%;
-      max-width: 1300px;
+      max-width: 1400px;
       margin-bottom: 30px;
     }
 
@@ -156,6 +156,15 @@
       backdrop-filter: blur(5px);
     }
 
+    .player-card.master-card {
+      border: 1px solid rgba(255, 85, 85, 0.8);
+      box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
+    }
+
+    .player-card.master-card .player-name {
+      color: #ff5555;
+    }
+
     .player-avatar {
       width: 110px;
       height: 110px;
@@ -164,6 +173,11 @@
       object-fit: cover;
       box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
       background: rgba(30, 30, 30, 0.8);
+    }
+
+    .player-card.master-card .player-avatar {
+      border-color: #ff5555;
+      box-shadow: 0 0 10px rgba(255, 85, 85, 0.4);
     }
 
     .player-name {
@@ -517,12 +531,6 @@
     }
 
     /* --- Responsive --- */
-    @media (max-width: 1024px) {
-      .players-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
     @media (max-width: 768px) {
       body {
         flex-direction: column;
@@ -547,10 +555,6 @@
         font-size: 10px;
         flex: 1 1 calc(33% - 10px);
         text-align: center;
-      }
-
-      .players-grid {
-        grid-template-columns: 1fr;
       }
 
       .character-container {
@@ -595,7 +599,7 @@
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
       
       <div class="players-grid" id="main-dice-grid">
-        <!-- Generado dinámicamente con las fotos y datos de los 4 jugadores -->
+        <!-- Generado dinámicamente con las fotos y datos de los jugadores y el Master -->
       </div>
     </section>
 
@@ -697,8 +701,9 @@
   </script>
 
   <script>
-    // Datos de los 4 Personajes
+    // Datos de los Personajes + Director de Juego (Master)
     const charactersData = [
+      { id: 'master', name: 'Master', img1: 'images/Master.png', isMaster: true },
       { id: 'kasai', name: 'Kasai', img1: 'images/Kasai1.png', img2: 'images/Kasai2.png' },
       { id: 'nite', name: 'Nite', img1: 'images/Nite1.png', img2: 'images/Nite2.png' },
       { id: 'takasi', name: 'Takasi', img1: 'images/Takasi1.png', img2: 'images/Takasi2.png' },
@@ -730,14 +735,14 @@
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
-    // Renderizar la mesa principal con los 4 jugadores
+    // Renderizar la mesa principal con los jugadores y el Master
     function renderMainTable() {
       const grid = document.getElementById('main-dice-grid');
       grid.innerHTML = '';
 
       charactersData.forEach(char => {
         const card = document.createElement('div');
-        card.className = 'player-card';
+        card.className = `player-card ${char.isMaster ? 'master-card' : ''}`;
         card.innerHTML = `
           <img src="${char.img1}" alt="${char.name}" class="player-avatar" onerror="this.src='images/icono.png';">
           <div class="player-name">${char.name}</div>
@@ -770,9 +775,9 @@
       });
     }
 
-    // Renderizar las fichas individuales
+    // Renderizar las fichas individuales (solo jugadores)
     function initCharacters() {
-      charactersData.forEach(char => {
+      charactersData.filter(char => !char.isMaster).forEach(char => {
         const container = document.getElementById(`char-block-${char.id}`);
         if (!container) return;
 
