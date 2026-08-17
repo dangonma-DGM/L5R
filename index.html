@@ -176,9 +176,14 @@
       background: rgba(30, 30, 30, 0.8);
     }
 
+    /* AJUSTE ESPECÍFICO PARA EL AVATAR DEL MASTER */
     .player-card.master-card .player-avatar {
       border-color: #ff5555;
       box-shadow: 0 0 10px rgba(255, 85, 85, 0.4);
+      object-fit: cover;
+      object-position: center 15%;
+      transform: scale(1.2);
+      background-color: #000000;
     }
 
     .player-name {
@@ -604,7 +609,7 @@
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
       
       <div class="players-grid" id="main-dice-grid">
-        <!-- Generado dinámicamente con las fotos y datos de los jugadores y el Master -->
+        <!-- Generado dinámicamente -->
       </div>
     </section>
 
@@ -678,7 +683,7 @@
       set(rollRef, rollData);
     };
 
-    // Escuchar actualizaciones en tiempo real para actualizar la mesa de todos
+    // Escuchar actualizaciones en tiempo real
     charactersData.forEach(char => {
       const rollRef = ref(db, 'rolls/' + char.id);
       onValue(rollRef, (snapshot) => {
@@ -740,7 +745,7 @@
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
-    // Renderizar la mesa principal con los jugadores y el Master
+    // Renderizar la mesa principal
     function renderMainTable() {
       const grid = document.getElementById('main-dice-grid');
       grid.innerHTML = '';
@@ -780,7 +785,7 @@
       });
     }
 
-    // Renderizar las fichas individuales (solo jugadores)
+    // Renderizar las fichas individuales
     function initCharacters() {
       charactersData.filter(char => !char.isMaster).forEach(char => {
         const container = document.getElementById(`char-block-${char.id}`);
@@ -810,7 +815,7 @@
       });
     }
 
-    // Lógica del sistema XgY para Leyenda de los Cinco Anillos
+    // Lógica del sistema XgY
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
