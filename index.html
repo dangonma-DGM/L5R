@@ -119,21 +119,178 @@
       display: flex;
     }
 
-    /* --- PANEL DE DADOS COMÚN (MESA GENERAL) --- */
     .table-title {
       text-align: center;
       color: #c5a059;
       font-size: 24px;
       text-transform: uppercase;
       letter-spacing: 3px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-shadow: 0 2px 10px rgba(0,0,0,0.9);
       border-bottom: 2px solid rgba(197, 160, 89, 0.4);
       padding-bottom: 10px;
       width: 100%;
-      max-width: 1300px;
+      max-width: 1400px;
     }
 
+    /* --- ESTILOS DEL CONTROL DE INICIATIVA CON ARRASTRE --- */
+    .initiative-bar {
+      width: 100%;
+      max-width: 1400px;
+      background: rgba(15, 15, 15, 0.92);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .init-round-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-right: 1px solid rgba(197, 160, 89, 0.3);
+      padding-right: 15px;
+    }
+
+    .init-round-btn {
+      background: rgba(40, 40, 40, 0.8);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      color: #c5a059;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .init-round-btn:hover {
+      background: rgba(197, 160, 89, 0.3);
+      color: #fff;
+    }
+
+    .init-round-title {
+      font-size: 9px;
+      color: #c5a059;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+
+    .init-round-num {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .init-portraits-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 5px 0;
+      flex: 1;
+    }
+
+    .init-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .init-card:active {
+      cursor: grabbing;
+    }
+
+    .init-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+
+    .init-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 2px solid rgba(197, 160, 89, 0.4);
+      object-fit: cover;
+      object-position: center top;
+      background: #111;
+      pointer-events: none;
+    }
+
+    .init-card.master .init-avatar {
+      border-color: rgba(255, 85, 85, 0.5);
+      object-fit: contain;
+    }
+
+    .init-card.active .init-avatar {
+      border-color: #55ff55;
+      box-shadow: 0 0 12px #55ff55;
+    }
+
+    .init-name {
+      font-size: 9px;
+      color: #ccc;
+      margin-top: 3px;
+      text-transform: uppercase;
+      font-weight: bold;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .init-card.active .init-name {
+      color: #55ff55;
+    }
+
+    .init-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      border-left: 1px solid rgba(197, 160, 89, 0.3);
+      padding-left: 15px;
+    }
+
+    .init-btn {
+      background: rgba(40, 40, 40, 0.8);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      color: #c5a059;
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .init-btn:hover {
+      background: rgba(197, 160, 89, 0.3);
+      color: #fff;
+    }
+
+    .init-btn.danger {
+      border-color: rgba(255, 85, 85, 0.4);
+      color: #ff5555;
+    }
+
+    .init-btn.danger:hover {
+      background: rgba(255, 85, 85, 0.3);
+      color: #fff;
+    }
+
+    /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -192,7 +349,6 @@
       letter-spacing: 1.5px;
     }
 
-    /* Lanzador dentro de la carta del jugador */
     .dice-roller-box {
       width: 100%;
       background: rgba(25, 25, 25, 0.9);
@@ -204,7 +360,6 @@
       gap: 10px;
     }
 
-    /* Botones del tipo de tirada */
     .roll-type-selector {
       display: flex;
       gap: 4px;
@@ -596,6 +751,10 @@
         text-align: center;
       }
 
+      .initiative-bar {
+        flex-wrap: wrap;
+      }
+
       .haiku-columns {
         flex-direction: column;
       }
@@ -632,6 +791,27 @@
     <!-- PÁGINA PRINCIPAL: MESA COMÚN DE DADOS -->
     <section id="page-inicio" class="page-section active">
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
+      
+      <!-- BANNER DE CONTROL DE INICIATIVA CON ARRASTRE -->
+      <div class="initiative-bar">
+        <div class="init-round-box">
+          <button class="init-round-btn" onclick="changeRound(-1)">-</button>
+          <div style="display:flex; flex-direction:column; align-items:center;">
+            <span class="init-round-title">Ronda</span>
+            <span class="init-round-num" id="init-round-display">1</span>
+          </div>
+          <button class="init-round-btn" onclick="changeRound(1)">+</button>
+        </div>
+
+        <div class="init-portraits-container" id="init-portraits-box"></div>
+
+        <div class="init-controls">
+          <button class="init-btn" onclick="addMasterTurn()">+ Master</button>
+          <button class="init-btn danger" onclick="removeMasterTurn()">- Master</button>
+          <button class="init-btn danger" onclick="resetInitiative()">Reiniciar</button>
+        </div>
+      </div>
+
       <div class="players-grid" id="main-dice-grid"></div>
     </section>
 
@@ -699,22 +879,34 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Synchronizer de Iniciativa en Firebase
+    window.saveInitiativeState = function(state) {
+      set(ref(db, 'initiative'), state);
+    };
+
+    onValue(ref(db, 'initiative'), (snapshot) => {
+      const state = snapshot.val();
+      if (state) {
+        window.initiativeState = state;
+        if (typeof window.renderInitiative === 'function') {
+          window.renderInitiative();
+        }
+      }
+    });
+
     // Guardar Tiradas de Dados
     window.saveRollToFirebase = function(charId, rollData) {
-      const rollRef = ref(db, 'rolls/' + charId);
-      set(rollRef, rollData);
+      set(ref(db, 'rolls/' + charId), rollData);
     };
 
-    // Guardar Campos de Ficha de Personaje
+    // Guardar Campos de Ficha
     window.saveField = function(charId, field, value) {
-      const refPath = ref(db, `sheets/${charId}/${field}`);
-      set(refPath, value);
+      set(ref(db, `sheets/${charId}/${field}`), value);
     };
 
-    // Sincronización en Tiempo Real de Dados
+    // Sincronización de Dados
     charactersData.forEach(char => {
-      const rollRef = ref(db, 'rolls/' + char.id);
-      onValue(rollRef, (snapshot) => {
+      onValue(ref(db, 'rolls/' + char.id), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const totalEl = document.getElementById(`total-${char.id}`);
@@ -737,10 +929,9 @@
       });
     });
 
-    // Sincronización en Tiempo Real de Fichas (CON AUTO-SINK EN DADOS)
+    // Sincronización de Fichas
     charactersData.filter(c => !c.isMaster).forEach(char => {
-      const sheetRef = ref(db, `sheets/${char.id}`);
-      onValue(sheetRef, (snapshot) => {
+      onValue(ref(db, `sheets/${char.id}`), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           window.characterSheetsData[char.id] = data;
@@ -752,7 +943,6 @@
             }
           });
 
-          // Sincroniza la Mesa de Dados automáticamente nada más recibir datos
           const currentType = window.currentRollTypes ? (window.currentRollTypes[char.id] || 'Ataque') : 'Ataque';
           if (typeof window.setRollType === 'function') {
             window.setRollType(char.id, currentType, true); 
@@ -773,6 +963,148 @@
 
     window.characterSheetsData = {};
     window.currentRollTypes = {};
+
+    // Estado inicial de Iniciativa
+    window.initiativeState = {
+      round: 1,
+      turnOrder: [
+        { id: 'kasai', name: 'Kasai', img: 'images/Kasai1.png', isMaster: false },
+        { id: 'nite', name: 'Nite', img: 'images/Nite1.png', isMaster: false },
+        { id: 'master_1', name: 'Master A', img: 'images/Master.png', isMaster: true },
+        { id: 'takasi', name: 'Takasi', img: 'images/Takasi1.png', isMaster: false },
+        { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false }
+      ]
+    };
+
+    let draggedItemIndex = null;
+
+    function renderInitiative() {
+      const container = document.getElementById('init-portraits-box');
+      const roundDisplay = document.getElementById('init-round-display');
+      if (!container || !roundDisplay) return;
+
+      roundDisplay.innerText = window.initiativeState.round;
+      container.innerHTML = '';
+
+      window.initiativeState.turnOrder.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = `init-card ${item.isMaster ? 'master' : ''}`;
+        card.draggable = true;
+        card.dataset.index = index;
+        card.title = "Arrastra para reordenar la iniciativa";
+
+        card.innerHTML = `
+          <img src="${item.img}" class="init-avatar" onerror="this.src='images/icono.png';">
+          <span class="init-name">${item.name}</span>
+        `;
+
+        // Eventos para Arrastrar y Soltar (Drag & Drop)
+        card.addEventListener('dragstart', (e) => {
+          draggedItemIndex = index;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          draggedItemIndex = null;
+        });
+
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (draggedItemIndex === null || draggedItemIndex === index) return;
+
+          // Reordenar la lista
+          const movedItem = window.initiativeState.turnOrder.splice(draggedItemIndex, 1)[0];
+          window.initiativeState.turnOrder.splice(index, 0, movedItem);
+
+          if (typeof window.saveInitiativeState === 'function') {
+            window.saveInitiativeState(window.initiativeState);
+          } else {
+            renderInitiative();
+          }
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function changeRound(delta) {
+      let state = window.initiativeState;
+      state.round = Math.max(1, (state.round || 1) + delta);
+      if (typeof window.saveInitiativeState === 'function') {
+        window.saveInitiativeState(state);
+      } else {
+        renderInitiative();
+      }
+    }
+
+    function addMasterTurn() {
+      let state = window.initiativeState;
+      const count = state.turnOrder.filter(x => x.isMaster).length + 1;
+      const letter = String.fromCharCode(64 + count); // A, B, C...
+      
+      state.turnOrder.push({
+        id: `master_${Date.now()}`,
+        name: `Master ${letter}`,
+        img: 'images/Master.png',
+        isMaster: true
+      });
+
+      if (typeof window.saveInitiativeState === 'function') {
+        window.saveInitiativeState(state);
+      } else {
+        renderInitiative();
+      }
+    }
+
+    function removeMasterTurn() {
+      let state = window.initiativeState;
+      const masterIndices = [];
+      state.turnOrder.forEach((item, idx) => {
+        if (item.isMaster) masterIndices.push(idx);
+      });
+
+      if (masterIndices.length > 0) {
+        const lastMasterIdx = masterIndices[masterIndices.length - 1];
+        state.turnOrder.splice(lastMasterIdx, 1);
+        if (typeof window.saveInitiativeState === 'function') {
+          window.saveInitiativeState(state);
+        } else {
+          renderInitiative();
+        }
+      }
+    }
+
+    function resetInitiative() {
+      window.initiativeState = {
+        round: 1,
+        turnOrder: [
+          { id: 'kasai', name: 'Kasai', img: 'images/Kasai1.png', isMaster: false },
+          { id: 'nite', name: 'Nite', img: 'images/Nite1.png', isMaster: false },
+          { id: 'master_1', name: 'Master A', img: 'images/Master.png', isMaster: true },
+          { id: 'takasi', name: 'Takasi', img: 'images/Takasi1.png', isMaster: false },
+          { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false }
+        ]
+      };
+      if (typeof window.saveInitiativeState === 'function') {
+        window.saveInitiativeState(window.initiativeState);
+      } else {
+        renderInitiative();
+      }
+    }
+
+    // Exponer funciones globalmente
+    window.renderInitiative = renderInitiative;
+    window.changeRound = changeRound;
+    window.addMasterTurn = addMasterTurn;
+    window.removeMasterTurn = removeMasterTurn;
+    window.resetInitiative = resetInitiative;
 
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
@@ -837,7 +1169,6 @@
       }
     }
 
-    // Exponer globalmente
     window.setRollType = setRollType;
 
     function renderFullSheetHTML(charId) {
@@ -1198,6 +1529,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      renderInitiative();
       renderMainTable();
       initCharacters();
       renderDeck('deck-bonos', bonosDeck, true, false);
