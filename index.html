@@ -737,12 +737,14 @@
       });
     });
 
-    // Sincronización en Tiempo Real de Fichas
+    // Sincronización en Tiempo Real de Fichas (CON AUTO-SINK EN DADOS)
     charactersData.filter(c => !c.isMaster).forEach(char => {
       const sheetRef = ref(db, `sheets/${char.id}`);
       onValue(sheetRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
+          window.characterSheetsData[char.id] = data;
+
           Object.keys(data).forEach(field => {
             const inputEl = document.getElementById(`${field}-${char.id}`);
             if (inputEl && document.activeElement !== inputEl) {
@@ -750,13 +752,10 @@
             }
           });
 
-          // Actualizar los datos cargados en memoria
-          window.characterSheetsData[char.id] = data;
-
-          // Si el jugador está en la vista de Mesa de Dados, actualizar sus valores prederminados si cambia su tipo seleccionado
-          if (typeof setRollType === 'function') {
-            const currentType = currentRollTypes[char.id] || 'Ataque';
-            setRollType(char.id, currentType, false); 
+          // Sincroniza la Mesa de Dados automáticamente nada más recibir datos
+          const currentType = window.currentRollTypes ? (window.currentRollTypes[char.id] || 'Ataque') : 'Ataque';
+          if (typeof window.setRollType === 'function') {
+            window.setRollType(char.id, currentType, true); 
           }
         }
       });
@@ -772,8 +771,8 @@
       { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' }
     ];
 
-    // Almacén global para las fichas de personajes
     window.characterSheetsData = {};
+    window.currentRollTypes = {};
 
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
@@ -800,11 +799,8 @@
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
-    // Modos de tirada por jugador
-    const currentRollTypes = {};
-
     function setRollType(charId, type, updateInputs = true) {
-      currentRollTypes[charId] = type;
+      window.currentRollTypes[charId] = type;
       
       const btnAtaque = document.getElementById(`btn-ataque-${charId}`);
       const btnDano = document.getElementById(`btn-dano-${charId}`);
@@ -841,12 +837,13 @@
       }
     }
 
-    // Plantilla Agrupada de Ficha L5R 3ª Edición
+    // Exponer globalmente
+    window.setRollType = setRollType;
+
     function renderFullSheetHTML(charId) {
       return `
         <div style="display: flex; flex-direction: column; gap: 20px; background: rgba(15, 15, 15, 0.95); padding: 20px; border-radius: 8px; border: 1px solid rgba(197, 160, 89, 0.3);">
           
-          <!-- CABECERA DE PERSONAJE -->
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 6px; border-left: 3px solid #c5a059;">
             <div>
               <label style="color:#c5a059; font-size:10px; font-weight:bold; letter-spacing:1px; display:block; margin-bottom:4px;">ESCUELA</label>
@@ -862,14 +859,12 @@
             </div>
           </div>
 
-          <!-- SECCIÓN DE LOS 5 ANILLOS -->
           <div>
             <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
               Anillos y Trazos
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
-              <!-- TIERRA -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">⛰️ TIERRA</div>
                 <div style="display:flex; justify-content:space-between; gap:6px;">
@@ -884,7 +879,6 @@
                 </div>
               </div>
 
-              <!-- AGUA -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🌊 AGUA</div>
                 <div style="display:flex; justify-content:space-between; gap:6px;">
@@ -899,7 +893,6 @@
                 </div>
               </div>
 
-              <!-- FUEGO -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🔥 FUEGO</div>
                 <div style="display:flex; justify-content:space-between; gap:6px;">
@@ -914,7 +907,6 @@
                 </div>
               </div>
 
-              <!-- AIRE -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🌪️ AIRE</div>
                 <div style="display:flex; justify-content:space-between; gap:6px;">
@@ -929,7 +921,6 @@
                 </div>
               </div>
 
-              <!-- VACÍO -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">☯️ VACÍO</div>
                 <div style="display:flex; justify-content:space-between; gap:6px;">
@@ -946,13 +937,11 @@
             </div>
           </div>
 
-          <!-- NUEVA SECCIÓN: CONFIGURACIÓN DE COMBATE Y TIRADAS PREDETERMINADAS -->
           <div style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 12px;">
             <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;">
               ⚔️ Fórmulas de Ataque y Daño (Sincronizadas con Mesa de Dados)
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-              <!-- CONFIGURACIÓN DE ATAQUE -->
               <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Ataque (Tirar g Guardar)</label>
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -961,7 +950,6 @@
                   <input type="number" id="atk_keep-${charId}" class="dice-input" style="width:50%;" placeholder="Guardar (2)" onchange="saveField('${charId}', 'atk_keep', this.value)">
                 </div>
               </div>
-              <!-- CONFIGURACIÓN DE DAÑO -->
               <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Daño (Tirar g Guardar)</label>
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -973,7 +961,6 @@
             </div>
           </div>
 
-          <!-- ESTADÍSTICAS SECUNDARIAS Y SOCIALES -->
           <div>
             <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
               Combate y Estatus
@@ -988,7 +975,6 @@
             </div>
           </div>
 
-          <!-- TEXTAREAS DE HABILIDADES Y TÉCNICAS -->
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
             <div>
               <label style="color:#c5a059; font-size:11px; font-weight:bold; display:block; margin-bottom:6px;">HABILIDADES Y ARMAS</label>
@@ -1009,7 +995,7 @@
       grid.innerHTML = '';
 
       charactersData.forEach(char => {
-        currentRollTypes[char.id] = 'Ataque';
+        window.currentRollTypes[char.id] = 'Ataque';
         const card = document.createElement('div');
         card.className = `player-card ${char.isMaster ? 'master-card' : ''}`;
         card.innerHTML = `
@@ -1017,7 +1003,6 @@
           <div class="player-name">${char.name}</div>
 
           <div class="dice-roller-box">
-            <!-- Selector de Tipo de Tirada -->
             <div class="roll-type-selector">
               <button id="btn-ataque-${char.id}" class="type-btn active" onclick="setRollType('${char.id}', 'Ataque')">Ataque</button>
               <button id="btn-dano-${char.id}" class="type-btn" onclick="setRollType('${char.id}', 'Daño')">Daño</button>
@@ -1070,7 +1055,7 @@
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
-      const rollType = currentRollTypes[charId] || 'Otros';
+      const rollType = window.currentRollTypes[charId] || 'Otros';
       
       let numRoll = parseInt(rollNumInput.value) || 1;
       let numKeep = parseInt(keepNumInput.value) || 1;
