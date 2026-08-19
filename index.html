@@ -179,6 +179,9 @@
     .player-card.master-card .player-avatar {
       border-color: #ff5555;
       box-shadow: 0 0 10px rgba(255, 85, 85, 0.4);
+      object-fit: contain;
+      object-position: center 10%;
+      background-color: #000;
     }
 
     .player-name {
@@ -204,7 +207,7 @@
     .dice-inputs {
       display: flex;
       gap: 10px;
-      justify-content: space-around;
+      justify-style: space-around;
     }
 
     .input-group {
@@ -227,7 +230,7 @@
       color: #fff;
       text-align: center;
       padding: 5px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       border-radius: 4px;
       outline: none;
@@ -296,8 +299,8 @@
 
     /* --- Plantilla Individual de Personaje --- */
     .character-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
       width: 100%;
       max-width: 1000px;
@@ -310,7 +313,6 @@
     }
 
     .char-title {
-      grid-column: 1 / -1;
       color: #c5a059;
       font-size: 22px;
       text-transform: uppercase;
@@ -347,7 +349,6 @@
 
     .char-textarea {
       width: 100%;
-      height: 250px;
       background: rgba(25, 25, 25, 0.9);
       border: 1px solid rgba(197, 160, 89, 0.3);
       border-radius: 4px;
@@ -562,10 +563,6 @@
         text-align: center;
       }
 
-      .character-container {
-        grid-template-columns: 1fr;
-      }
-
       .haiku-columns {
         flex-direction: column;
       }
@@ -602,10 +599,7 @@
     <!-- PÁGINA PRINCIPAL: MESA COMÚN DE DADOS -->
     <section id="page-inicio" class="page-section active">
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
-      
-      <div class="players-grid" id="main-dice-grid">
-        <!-- Generado dinámicamente -->
-      </div>
+      <div class="players-grid" id="main-dice-grid"></div>
     </section>
 
     <!-- PÁGINAS DE FICHAS INDIVIDUALES -->
@@ -654,7 +648,7 @@
 
   </main>
 
-  <!-- Módulo Firebase de Conexión en Tiempo Real -->
+  <!-- Lógica en JavaScript y Firebase Realtime Database -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -672,13 +666,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Enviar tirada a Firebase al hacer clic
+    // Guardar Tiradas de Dados
     window.saveRollToFirebase = function(charId, rollData) {
       const rollRef = ref(db, 'rolls/' + charId);
       set(rollRef, rollData);
     };
 
-    // Escuchar actualizaciones en tiempo real
+    // Guardar Campos de Ficha de Personaje
+    window.saveField = function(charId, field, value) {
+      const refPath = ref(db, `sheets/${charId}/${field}`);
+      set(refPath, value);
+    };
+
+    // Sincronización en Tiempo Real de Dados
     charactersData.forEach(char => {
       const rollRef = ref(db, 'rolls/' + char.id);
       onValue(rollRef, (snapshot) => {
@@ -703,10 +703,25 @@
         }
       });
     });
+
+    // Sincronización en Tiempo Real de Fichas
+    charactersData.filter(c => !c.isMaster).forEach(char => {
+      const sheetRef = ref(db, `sheets/${char.id}`);
+      onValue(sheetRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          Object.keys(data).forEach(field => {
+            const inputEl = document.getElementById(`${field}-${char.id}`);
+            if (inputEl && document.activeElement !== inputEl) {
+              inputEl.value = data[field];
+            }
+          });
+        }
+      });
+    });
   </script>
 
   <script>
-    // Datos de los Personajes + Director de Juego (Master)
     const charactersData = [
       { id: 'master', name: 'Master', img1: 'images/Master.png', isMaster: true },
       { id: 'kasai', name: 'Kasai', img1: 'images/Kasai1.png', img2: 'images/Kasai2.png' },
@@ -740,7 +755,144 @@
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
-    // Renderizar la mesa principal
+    // Plantilla Agrupada de Ficha L5R 3ª Edición
+    function renderFullSheetHTML(charId) {
+      return `
+        <div style="display: flex; flex-direction: column; gap: 20px; background: rgba(15, 15, 15, 0.95); padding: 20px; border-radius: 8px; border: 1px solid rgba(197, 160, 89, 0.3);">
+          
+          <!-- CABECERA DE PERSONAJE -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 6px; border-left: 3px solid #c5a059;">
+            <div>
+              <label style="color:#c5a059; font-size:10px; font-weight:bold; letter-spacing:1px; display:block; margin-bottom:4px;">ESCUELA</label>
+              <input type="text" id="escuela-${charId}" class="dice-input" style="width:100%; text-align:left;" onchange="saveField('${charId}', 'escuela', this.value)">
+            </div>
+            <div>
+              <label style="color:#c5a059; font-size:10px; font-weight:bold; letter-spacing:1px; display:block; margin-bottom:4px;">CLAN</label>
+              <input type="text" id="clan-${charId}" class="dice-input" style="width:100%; text-align:left;" onchange="saveField('${charId}', 'clan', this.value)">
+            </div>
+            <div>
+              <label style="color:#c5a059; font-size:10px; font-weight:bold; letter-spacing:1px; display:block; margin-bottom:4px;">RECONOCIMIENTO</label>
+              <input type="number" id="reconocimiento-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'reconocimiento', this.value)">
+            </div>
+          </div>
+
+          <!-- SECCIÓN DE LOS 5 ANILLOS ENMARCADOS INDIVIDUALMENTE -->
+          <div>
+            <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
+              Anillos y Trazos
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+              
+              <!-- TIERRA -->
+              <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">⛰️ TIERRA</div>
+                <div style="display:flex; justify-content:space-between; gap:6px;">
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">RESISTENCIA</span>
+                    <input type="number" id="resistencia-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'resistencia', this.value)">
+                  </div>
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">VOLUNTAD</span>
+                    <input type="number" id="voluntad-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'voluntad', this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- AGUA -->
+              <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🌊 AGUA</div>
+                <div style="display:flex; justify-content:space-between; gap:6px;">
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">FUERZA</span>
+                    <input type="number" id="fuerza-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'fuerza', this.value)">
+                  </div>
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">PERCEPCIÓN</span>
+                    <input type="number" id="percepcion-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'percepcion', this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- FUEGO -->
+              <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🔥 FUEGO</div>
+                <div style="display:flex; justify-content:space-between; gap:6px;">
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">AGILIDAD</span>
+                    <input type="number" id="agilidad-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'agilidad', this.value)">
+                  </div>
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">INTELIGENCIA</span>
+                    <input type="number" id="inteligencia-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'inteligencia', this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- AIRE -->
+              <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">🌪️ AIRE</div>
+                <div style="display:flex; justify-content:space-between; gap:6px;">
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">REFLEJOS</span>
+                    <input type="number" id="reflejos-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'reflejos', this.value)">
+                  </div>
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">CONSCIENCIA</span>
+                    <input type="number" id="consciencia-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'consciencia', this.value)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- VACÍO -->
+              <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
+                <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">☯️ VACÍO</div>
+                <div style="display:flex; justify-content:space-between; gap:6px;">
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">MÁXIMO</span>
+                    <input type="number" id="vacio-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'vacio', this.value)">
+                  </div>
+                  <div style="flex:1;">
+                    <span style="font-size:9px; color:#aaa; display:block;">GASTADOS</span>
+                    <input type="number" id="vacio_gastado-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'vacio_gastado', this.value)">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ESTADÍSTICAS SECUNDARIAS Y SOCIALES -->
+          <div>
+            <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
+              Combate y Estatus
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 6px;">
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">ND IMPACTO</label><input type="number" id="nd_impacto-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'nd_impacto', this.value)"></div>
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">INICIATIVA</label><input type="text" id="iniciativa-${charId}" class="dice-input" style="width:100%;" placeholder="4g2" onchange="saveField('${charId}', 'iniciativa', this.value)"></div>
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">HONOR</label><input type="number" id="honor-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'honor', this.value)"></div>
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">GLORIA</label><input type="number" id="gloria-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'gloria', this.value)"></div>
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">ESTATUS</label><input type="number" id="estatus-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'estatus', this.value)"></div>
+              <div style="text-align:center;"><label style="color:#aaa; font-size:9px; display:block; margin-bottom:3px;">PUNTOS EXP</label><input type="number" id="px-${charId}" class="dice-input" style="width:100%;" onchange="saveField('${charId}', 'px', this.value)"></div>
+            </div>
+          </div>
+
+          <!-- TEXTAREAS DE HABILIDADES Y TÉCNICAS -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+            <div>
+              <label style="color:#c5a059; font-size:11px; font-weight:bold; display:block; margin-bottom:6px;">HABILIDADES Y ARMAS</label>
+              <textarea id="habilidades-${charId}" class="char-textarea" style="height:120px;" placeholder="Ej: Kenjutsu 3 (Katana), Iaijutsu 2..." onchange="saveField('${charId}', 'habilidades', this.value)"></textarea>
+            </div>
+            <div>
+              <label style="color:#c5a059; font-size:11px; font-weight:bold; display:block; margin-bottom:6px;">VENTAJAS / DESVENTAJAS / TÉCNICAS</label>
+              <textarea id="ventajas-${charId}" class="char-textarea" style="height:120px;" placeholder="Ej: Reflejos Rápidos, Código de Honor..." onchange="saveField('${charId}', 'ventajas', this.value)"></textarea>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
     function renderMainTable() {
       const grid = document.getElementById('main-dice-grid');
       grid.innerHTML = '';
@@ -780,7 +932,6 @@
       });
     }
 
-    // Renderizar las fichas individuales
     function initCharacters() {
       charactersData.filter(char => !char.isMaster).forEach(char => {
         const container = document.getElementById(`char-block-${char.id}`);
@@ -788,29 +939,15 @@
 
         container.innerHTML = `
           <h2 class="char-title">${char.name}</h2>
-          <div class="char-gallery">
-            <div class="char-img-wrapper">
-              <img src="${char.img1}" alt="${char.name} 1" onerror="this.src='images/icono.png';">
-            </div>
-            <div class="char-img-wrapper">
-              <img src="${char.img2}" alt="${char.name} 2" onerror="this.src='images/icono.png';">
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <label style="color:#c5a059; font-weight:bold;">FICHA Y NOTAS DE ${char.name.toUpperCase()}:</label>
-            <textarea id="desc-${char.id}" class="char-textarea" placeholder="Datos, ventajas o historial del personaje..."></textarea>
+          ${renderFullSheetHTML(char.id)}
+          <div class="char-gallery" style="margin-top:10px;">
+            <div class="char-img-wrapper"><img src="${char.img1}" onerror="this.src='images/icono.png';"></div>
+            <div class="char-img-wrapper"><img src="${char.img2}" onerror="this.src='images/icono.png';"></div>
           </div>
         `;
-
-        const descArea = document.getElementById(`desc-${char.id}`);
-        descArea.value = localStorage.getItem(`desc_${char.id}`) || '';
-        descArea.addEventListener('input', () => {
-          localStorage.setItem(`desc_${char.id}`, descArea.value);
-        });
       });
     }
 
-    // Lógica del sistema XgY
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
@@ -866,7 +1003,6 @@
       }
     }
 
-    // Barajar
     function shuffleArray(array) {
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -938,7 +1074,6 @@
       });
     }
 
-    // Cambiar Pestañas
     function switchTab(tabName) {
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
@@ -956,7 +1091,6 @@
       else if (tabName === 'haikus') renderHaikus();
     }
 
-    // Inicio
     window.addEventListener('DOMContentLoaded', () => {
       renderMainTable();
       initCharacters();
