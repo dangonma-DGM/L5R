@@ -928,7 +928,7 @@
   <!-- Lógica en JavaScript y Firebase Realtime Database -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAAYf_qFkBwVxovQ4Sr_GMpdMaDSsTBRoY",
@@ -984,10 +984,30 @@
       set(ref(db, 'map/tokens'), tokensState);
     };
 
+    // VERIFICACIÓN SEGURA DE TOKENS: Evita que clientes desincronizados borren el mapa
+    const dbRef = ref(db);
+    get(child(dbRef, 'map/tokens')).then((snapshot) => {
+      const defaultTokens = typeof window.getDefaultTokens === 'function' ? window.getDefaultTokens() : {};
+      if (snapshot.exists()) {
+        const serverData = snapshot.val();
+        window.mapTokensState = { ...defaultTokens, ...serverData };
+      } else {
+        window.mapTokensState = defaultTokens;
+        window.saveMapTokens(window.mapTokensState);
+      }
+      if (typeof window.renderMapTokens === 'function') {
+        window.renderMapTokens();
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
+
+    // Escuchar cambios en tiempo real del mapa de tokens de forma segura
     onValue(ref(db, 'map/tokens'), (snapshot) => {
       const data = snapshot.val();
+      const defaultTokens = typeof window.getDefaultTokens === 'function' ? window.getDefaultTokens() : {};
       if (data) {
-        window.mapTokensState = data;
+        window.mapTokensState = { ...defaultTokens, ...data };
         if (typeof window.renderMapTokens === 'function') {
           window.renderMapTokens();
         }
@@ -1054,7 +1074,6 @@
     window.characterSheetsData = {};
     window.currentRollTypes = {};
 
-    // Estado inicial de Iniciativa
     window.initiativeState = {
       round: 1,
       turnOrder: [
@@ -1138,7 +1157,6 @@
       const letter = String.fromCharCode(64 + masterCount);
       const newId = `master_${Date.now()}`;
       
-      // Añadir a la iniciativa
       state.turnOrder.push({
         id: newId,
         name: `Master ${letter}`,
@@ -1152,7 +1170,6 @@
         renderInitiative();
       }
 
-      // Añadir también su token correspondiente al mapa táctico
       if (!window.mapTokensState) window.mapTokensState = {};
       window.mapTokensState[newId] = {
         x: 100 + (masterCount * 30),
@@ -1186,7 +1203,6 @@
           renderInitiative();
         }
 
-        // Eliminar también su token del mapa táctico
         if (window.mapTokensState && window.mapTokensState[lastMaster.item.id]) {
           delete window.mapTokensState[lastMaster.item.id];
           if (typeof window.saveMapTokens === 'function') {
@@ -1210,13 +1226,7 @@
         ]
       };
 
-      window.mapTokensState = {
-        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
-        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
-        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
-        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
-        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
-      };
+      window.mapTokensState = getDefaultTokens();
 
       if (typeof window.saveInitiativeState === 'function') {
         window.saveInitiativeState(window.initiativeState);
@@ -1242,13 +1252,18 @@
     let currentTool = 'draw'; 
     let mapCanvas, mapCtx;
 
-    window.mapTokensState = {
-      'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
-      'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
-      'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
-      'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
-      'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
-    };
+    function getDefaultTokens() {
+      return {
+        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
+        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
+        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
+        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
+        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
+      };
+    }
+    window.getDefaultTokens = getDefaultTokens;
+
+    window.mapTokensState = getDefaultTokens();
 
     function initTacticalMap() {
       mapCanvas = document.getElementById('map-canvas');
@@ -1332,6 +1347,8 @@
 
       Object.keys(window.mapTokensState).forEach(id => {
         const tokenData = window.mapTokensState[id];
+        if (!tokenData) return;
+        
         const el = document.createElement('img');
         el.src = tokenData.img;
         el.className = `map-token ${tokenData.isMaster ? 'master-token' : ''}`;
@@ -1806,11 +1823,11 @@
       renderHaikus();
       initTacticalMap();
 
-      const notesArea = document.getElementById('samurai-notes');
-      if (notesArea) {
-        notesArea.value = localStorage.getItem('leyenda_notas') || '';
-        notesArea.addEventListener('input', () => {
-          localStorage.setItem('leyenda_notas', notesArea.value);
+      const notesAreaGeneral = document.getElementById('samurai-notes');
+      if (notesAreaGeneral) {
+        notesAreaGeneral.value = localStorage.getItem('leyenda_notas') || '';
+        notesAreaGeneral.addEventListener('input', () => {
+          localStorage.setItem('leyenda_notas', notesAreaGeneral.value);
         });
       }
     });
