@@ -290,6 +290,40 @@
       color: #fff;
     }
 
+    /* --- MAPA TÁCTICO Y TOKENS --- */
+    #tactical-map-container {
+      background-image: linear-gradient(rgba(197, 160, 89, 0.15) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(197, 160, 89, 0.15) 1px, transparent 1px),
+                        url('images/bg-mapa.jpg');
+      background-size: 40px 40px, 40px 40px, cover;
+      background-position: center;
+    }
+
+    .map-token {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #c5a059;
+      object-fit: cover;
+      cursor: grab;
+      pointer-events: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+      transition: transform 0.1s ease;
+      user-select: none;
+    }
+
+    .map-token.master-token {
+      border-color: #ff5555;
+      object-fit: contain;
+      background-color: #000;
+    }
+
+    .map-token:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+    }
+
     /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
       display: grid;
@@ -788,7 +822,7 @@
   <!-- Área Principal -->
   <main class="main-content">
 
-    <!-- PÁGINA PRINCIPAL: MESA COMÚN DE DADOS -->
+    <!-- PÁGINA PRINCIPAL: MESA COMÚN DE DADOS Y MAPA TÁCTICO -->
     <section id="page-inicio" class="page-section active">
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
       
@@ -806,13 +840,43 @@
         <div class="init-portraits-container" id="init-portraits-box"></div>
 
         <div class="init-controls">
-          <button class="init-btn" onclick="addMasterTurn()">+ Master</button>
-          <button class="init-btn danger" onclick="removeMasterTurn()">- Master</button>
-          <button class="init-btn danger" onclick="resetInitiative()">Reiniciar</button>
+          <button class="init-btn danger" onclick="resetInitiative()">Reiniciar Iniciativa</button>
         </div>
       </div>
 
+      <!-- Cuadrícula de jugadores y dados -->
       <div class="players-grid" id="main-dice-grid"></div>
+
+      <!-- --- MAPA TÁCTICO INTEGRADO DEBAJO DE LOS DADOS --- -->
+      <div style="width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; border-top: 2px solid rgba(197, 160, 89, 0.4); padding-top: 25px;">
+        <h2 style="color: #c5a059; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; text-align: center;">Mapa Táctico de Batalla</h2>
+        
+        <!-- Barra de Herramientas del Mapa -->
+        <div style="display: flex; gap: 10px; background: rgba(15, 15, 15, 0.9); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(197, 160, 89, 0.4); flex-wrap: wrap; align-items: center;">
+          <button class="init-btn" onclick="setMapTool('draw')">✏️ Dibujar</button>
+          <button class="init-btn" onclick="setMapTool('erase')">🧹 Borrar trazos</button>
+          <label style="color: #c5a059; font-weight: bold; display: flex; align-items: center; gap: 5px; font-size: 11px;">
+            Color: <input type="color" id="map-color" value="#c5a059" style="background:none; border:none; width:25px; height:25px; cursor:pointer;">
+          </label>
+          <button class="init-btn danger" onclick="clearMapCanvas()">Limpiar Lienzo</button>
+          
+          <div style="border-left: 1px solid rgba(197,160,89,0.3); margin-left: 5px; padding-left: 15px; display: flex; gap: 10px;">
+            <button class="init-btn" onclick="addMasterTurn()">👹 + Token Master</button>
+            <button class="init-btn danger" onclick="removeMasterTurn()">- Token Master</button>
+          </div>
+        </div>
+
+        <!-- Contenedor del Mapa con Cuadrícula y Tokens -->
+        <div id="tactical-map-container" style="position: relative; width: 100%; max-width: 1100px; height: 600px; border: 2px solid #c5a059; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); overflow: hidden; cursor: crosshair;">
+          <!-- Canvas para los trazos libres -->
+          <canvas id="map-canvas" width="1100" height="600" style="position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%;"></canvas>
+          <!-- Contenedor donde se arrastran las fichas/tokens -->
+          <div id="map-tokens-layer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+        </div>
+        <div style="font-size: 10px; color: #aaa; text-align: center; margin-bottom: 30px;">
+          * Arrastra los avatares directamente por la cuadrícula del mapa para moverlos tácticamente en tiempo real.
+        </div>
+      </div>
     </section>
 
     <!-- PÁGINAS DE FICHAS INDIVIDUALES -->
@@ -903,6 +967,32 @@
     window.saveField = function(charId, field, value) {
       set(ref(db, `sheets/${charId}/${field}`), value);
     };
+
+    // Sincronización del Mapa Táctico en Firebase
+    window.saveMapDrawing = function(drawingData) {
+      set(ref(db, 'map/drawing'), drawingData);
+    };
+
+    onValue(ref(db, 'map/drawing'), (snapshot) => {
+      const data = snapshot.val();
+      if (data && window.drawFromFirebase) {
+        window.drawFromFirebase(data);
+      }
+    });
+
+    window.saveMapTokens = function(tokensState) {
+      set(ref(db, 'map/tokens'), tokensState);
+    };
+
+    onValue(ref(db, 'map/tokens'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        window.mapTokensState = data;
+        if (typeof window.renderMapTokens === 'function') {
+          window.renderMapTokens();
+        }
+      }
+    });
 
     // Sincronización de Dados
     charactersData.forEach(char => {
@@ -998,7 +1088,6 @@
           <span class="init-name">${item.name}</span>
         `;
 
-        // Eventos para Arrastrar y Soltar (Drag & Drop)
         card.addEventListener('dragstart', (e) => {
           draggedItemIndex = index;
           card.classList.add('dragging');
@@ -1019,7 +1108,6 @@
           e.preventDefault();
           if (draggedItemIndex === null || draggedItemIndex === index) return;
 
-          // Reordenar la lista
           const movedItem = window.initiativeState.turnOrder.splice(draggedItemIndex, 1)[0];
           window.initiativeState.turnOrder.splice(index, 0, movedItem);
 
@@ -1046,11 +1134,13 @@
 
     function addMasterTurn() {
       let state = window.initiativeState;
-      const count = state.turnOrder.filter(x => x.isMaster).length + 1;
-      const letter = String.fromCharCode(64 + count); // A, B, C...
+      const masterCount = state.turnOrder.filter(x => x.isMaster).length + 1;
+      const letter = String.fromCharCode(64 + masterCount);
+      const newId = `master_${Date.now()}`;
       
+      // Añadir a la iniciativa
       state.turnOrder.push({
-        id: `master_${Date.now()}`,
+        id: newId,
         name: `Master ${letter}`,
         img: 'images/Master.png',
         isMaster: true
@@ -1061,22 +1151,49 @@
       } else {
         renderInitiative();
       }
+
+      // Añadir también su token correspondiente al mapa táctico
+      if (!window.mapTokensState) window.mapTokensState = {};
+      window.mapTokensState[newId] = {
+        x: 100 + (masterCount * 30),
+        y: 100,
+        img: 'images/Master.png',
+        name: `Master ${letter}`,
+        isMaster: true
+      };
+
+      if (typeof window.saveMapTokens === 'function') {
+        window.saveMapTokens(window.mapTokensState);
+      } else {
+        renderMapTokens();
+      }
     }
 
     function removeMasterTurn() {
       let state = window.initiativeState;
-      const masterIndices = [];
+      const masterItems = [];
       state.turnOrder.forEach((item, idx) => {
-        if (item.isMaster) masterIndices.push(idx);
+        if (item.isMaster) masterItems.push({ item, idx });
       });
 
-      if (masterIndices.length > 0) {
-        const lastMasterIdx = masterIndices[masterIndices.length - 1];
-        state.turnOrder.splice(lastMasterIdx, 1);
+      if (masterItems.length > 0) {
+        const lastMaster = masterItems[masterItems.length - 1];
+        state.turnOrder.splice(lastMaster.idx, 1);
+
         if (typeof window.saveInitiativeState === 'function') {
           window.saveInitiativeState(state);
         } else {
           renderInitiative();
+        }
+
+        // Eliminar también su token del mapa táctico
+        if (window.mapTokensState && window.mapTokensState[lastMaster.item.id]) {
+          delete window.mapTokensState[lastMaster.item.id];
+          if (typeof window.saveMapTokens === 'function') {
+            window.saveMapTokens(window.mapTokensState);
+          } else {
+            renderMapTokens();
+          }
         }
       }
     }
@@ -1092,19 +1209,171 @@
           { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false }
         ]
       };
+
+      window.mapTokensState = {
+        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
+        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
+        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
+        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
+        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
+      };
+
       if (typeof window.saveInitiativeState === 'function') {
         window.saveInitiativeState(window.initiativeState);
       } else {
         renderInitiative();
       }
+
+      if (typeof window.saveMapTokens === 'function') {
+        window.saveMapTokens(window.mapTokensState);
+      } else {
+        renderMapTokens();
+      }
     }
 
-    // Exponer funciones globalmente
     window.renderInitiative = renderInitiative;
     window.changeRound = changeRound;
     window.addMasterTurn = addMasterTurn;
     window.removeMasterTurn = removeMasterTurn;
     window.resetInitiative = resetInitiative;
+
+    // --- LÓGICA DEL MAPA TÁCTICO ---
+    let isDrawing = false;
+    let currentTool = 'draw'; 
+    let mapCanvas, mapCtx;
+
+    window.mapTokensState = {
+      'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
+      'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
+      'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
+      'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
+      'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
+    };
+
+    function initTacticalMap() {
+      mapCanvas = document.getElementById('map-canvas');
+      if (!mapCanvas) return;
+      mapCtx = mapCanvas.getContext('2d');
+
+      mapCanvas.addEventListener('mousedown', startDrawing);
+      mapCanvas.addEventListener('mousemove', drawOnMap);
+      window.addEventListener('mouseup', stopDrawing);
+
+      renderMapTokens();
+    }
+
+    function setMapTool(tool) {
+      currentTool = tool;
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      drawOnMap(e);
+    }
+
+    function drawOnMap(e) {
+      if (!isDrawing) return;
+      const rect = mapCanvas.getBoundingClientRect();
+      const scaleX = mapCanvas.width / rect.width;
+      const scaleY = mapCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const color = document.getElementById('map-color').value;
+
+      mapCtx.lineWidth = currentTool === 'erase' ? 20 : 3;
+      mapCtx.lineCap = 'round';
+      
+      if (currentTool === 'erase') {
+        mapCtx.globalCompositeOperation = 'destination-out';
+      } else {
+        mapCtx.globalCompositeOperation = 'source-over';
+        mapCtx.strokeStyle = color;
+      }
+
+      mapCtx.lineTo(x, y);
+      mapCtx.stroke();
+      mapCtx.beginPath();
+      mapCtx.moveTo(x, y);
+
+      if (window.saveMapDrawing) {
+        window.saveMapDrawing(mapCanvas.toDataURL());
+      }
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      if (mapCtx) mapCtx.beginPath();
+    }
+
+    window.drawFromFirebase = function(dataUrl) {
+      if (!mapCanvas || !mapCtx) return;
+      const img = new Image();
+      img.onload = function() {
+        mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+        mapCtx.drawImage(img, 0, 0, mapCanvas.width, mapCanvas.height);
+      };
+      img.src = dataUrl;
+    };
+
+    function clearMapCanvas() {
+      if (!mapCanvas || !mapCtx) return;
+      mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+      if (window.saveMapDrawing) {
+        window.saveMapDrawing(mapCanvas.toDataURL());
+      }
+    }
+
+    function renderMapTokens() {
+      const layer = document.getElementById('map-tokens-layer');
+      if (!layer) return;
+      layer.innerHTML = '';
+
+      if (!window.mapTokensState) return;
+
+      Object.keys(window.mapTokensState).forEach(id => {
+        const tokenData = window.mapTokensState[id];
+        const el = document.createElement('img');
+        el.src = tokenData.img;
+        el.className = `map-token ${tokenData.isMaster ? 'master-token' : ''}`;
+        el.style.left = `${tokenData.x}px`;
+        el.style.top = `${tokenData.y}px`;
+        el.title = tokenData.name;
+        el.onerror = function() { this.src = 'images/icono.png'; };
+
+        let isDraggingToken = false;
+        let startX, startY;
+
+        el.addEventListener('mousedown', (e) => {
+          isDraggingToken = true;
+          startX = e.clientX - tokenData.x;
+          startY = e.clientY - tokenData.y;
+          e.stopPropagation();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDraggingToken) return;
+          tokenData.x = e.clientX - startX;
+          tokenData.y = e.clientY - startY;
+          el.style.left = `${tokenData.x}px`;
+          el.style.top = `${tokenData.y}px`;
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (isDraggingToken) {
+            isDraggingToken = false;
+            if (window.saveMapTokens) {
+              window.saveMapTokens(window.mapTokensState);
+            }
+          }
+        });
+
+        layer.appendChild(el);
+      });
+    }
+
+    window.setMapTool = setMapTool;
+    window.clearMapCanvas = clearMapCanvas;
+    window.renderMapTokens = renderMapTokens;
 
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
@@ -1444,7 +1713,7 @@
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[i], copy[j]];
+        [copy[i], copy[j]] = [copy[j], copy[i]];
       }
       return copy;
     }
@@ -1535,6 +1804,7 @@
       renderDeck('deck-bonos', bonosDeck, true, false);
       renderDeck('deck-hasimaru', hasimaruDeck, false, true);
       renderHaikus();
+      initTacticalMap();
 
       const notesArea = document.getElementById('samurai-notes');
       if (notesArea) {
