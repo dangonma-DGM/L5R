@@ -136,7 +136,7 @@
 
     .players-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 20px;
       width: 100%;
       max-width: 1400px;
@@ -204,10 +204,43 @@
       gap: 10px;
     }
 
+    /* Botones del tipo de tirada */
+    .roll-type-selector {
+      display: flex;
+      gap: 4px;
+      justify-content: space-between;
+    }
+
+    .type-btn {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      color: #ccc;
+      font-size: 9px;
+      padding: 4px 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .type-btn:hover {
+      background: rgba(197, 160, 89, 0.2);
+      color: #fff;
+    }
+
+    .type-btn.active {
+      background: #c5a059;
+      color: #000;
+      border-color: #c5a059;
+    }
+
     .dice-inputs {
       display: flex;
       gap: 10px;
-      justify-style: space-around;
+      justify-content: space-around;
     }
 
     .input-group {
@@ -695,7 +728,7 @@
             const historyEntry = document.createElement('div');
             historyEntry.className = 'history-entry';
             historyEntry.innerHTML = `
-              <strong>${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
+              <strong>[${data.type || 'Tirada'}] ${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
               <br><span style="font-size:9px;">Dados: ${data.diceDetailsStr}</span>
             `;
             historyBox.prepend(historyEntry);
@@ -716,6 +749,15 @@
               inputEl.value = data[field];
             }
           });
+
+          // Actualizar los datos cargados en memoria
+          window.characterSheetsData[char.id] = data;
+
+          // Si el jugador está en la vista de Mesa de Dados, actualizar sus valores prederminados si cambia su tipo seleccionado
+          if (typeof setRollType === 'function') {
+            const currentType = currentRollTypes[char.id] || 'Ataque';
+            setRollType(char.id, currentType, false); 
+          }
         }
       });
     });
@@ -729,6 +771,9 @@
       { id: 'takasi', name: 'Takasi', img1: 'images/Takasi1.png', img2: 'images/Takasi2.png' },
       { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' }
     ];
+
+    // Almacén global para las fichas de personajes
+    window.characterSheetsData = {};
 
     const bonosDeck = [
       { image: 'images/Bonos/Haikus.png', text: 'Haikus. Detalla la belleza de la poesía japonesa.' },
@@ -755,6 +800,47 @@
       col3: ["en silencio.", "sin descanso.", "con honor."]
     };
 
+    // Modos de tirada por jugador
+    const currentRollTypes = {};
+
+    function setRollType(charId, type, updateInputs = true) {
+      currentRollTypes[charId] = type;
+      
+      const btnAtaque = document.getElementById(`btn-ataque-${charId}`);
+      const btnDano = document.getElementById(`btn-dano-${charId}`);
+      const btnOtros = document.getElementById(`btn-otros-${charId}`);
+
+      if (btnAtaque && btnDano && btnOtros) {
+        btnAtaque.classList.remove('active');
+        btnDano.classList.remove('active');
+        btnOtros.classList.remove('active');
+
+        if (type === 'Ataque') btnAtaque.classList.add('active');
+        else if (type === 'Daño') btnDano.classList.add('active');
+        else btnOtros.classList.add('active');
+      }
+
+      if (!updateInputs) return;
+
+      const rollNumInput = document.getElementById(`roll-num-${charId}`);
+      const keepNumInput = document.getElementById(`keep-num-${charId}`);
+
+      if (!rollNumInput || !keepNumInput) return;
+
+      const sheet = window.characterSheetsData[charId] || {};
+
+      if (type === 'Ataque') {
+        rollNumInput.value = sheet.atk_roll !== undefined && sheet.atk_roll !== '' ? sheet.atk_roll : 5;
+        keepNumInput.value = sheet.atk_keep !== undefined && sheet.atk_keep !== '' ? sheet.atk_keep : 2;
+      } else if (type === 'Daño') {
+        rollNumInput.value = sheet.dmg_roll !== undefined && sheet.dmg_roll !== '' ? sheet.dmg_roll : 2;
+        keepNumInput.value = sheet.dmg_keep !== undefined && sheet.dmg_keep !== '' ? sheet.dmg_keep : 2;
+      } else {
+        rollNumInput.value = 1;
+        keepNumInput.value = 1;
+      }
+    }
+
     // Plantilla Agrupada de Ficha L5R 3ª Edición
     function renderFullSheetHTML(charId) {
       return `
@@ -776,14 +862,13 @@
             </div>
           </div>
 
-          <!-- SECCIÓN DE LOS 5 ANILLOS ENMARCADOS INDIVIDUALMENTE -->
+          <!-- SECCIÓN DE LOS 5 ANILLOS -->
           <div>
             <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
               Anillos y Trazos
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
-              
               <!-- TIERRA -->
               <div style="background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 10px; text-align: center;">
                 <div style="color:#c5a059; font-weight:bold; border-bottom: 1px solid rgba(197, 160, 89, 0.2); padding-bottom: 4px; margin-bottom: 8px;">⛰️ TIERRA</div>
@@ -858,7 +943,33 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
+          <!-- NUEVA SECCIÓN: CONFIGURACIÓN DE COMBATE Y TIRADAS PREDETERMINADAS -->
+          <div style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 12px;">
+            <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;">
+              ⚔️ Fórmulas de Ataque y Daño (Sincronizadas con Mesa de Dados)
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+              <!-- CONFIGURACIÓN DE ATAQUE -->
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Ataque (Tirar g Guardar)</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <input type="number" id="atk_roll-${charId}" class="dice-input" style="width:50%;" placeholder="Tirar (5)" onchange="saveField('${charId}', 'atk_roll', this.value)">
+                  <span style="color:#c5a059; font-weight:bold;">g</span>
+                  <input type="number" id="atk_keep-${charId}" class="dice-input" style="width:50%;" placeholder="Guardar (2)" onchange="saveField('${charId}', 'atk_keep', this.value)">
+                </div>
+              </div>
+              <!-- CONFIGURACIÓN DE DAÑO -->
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Daño (Tirar g Guardar)</label>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <input type="number" id="dmg_roll-${charId}" class="dice-input" style="width:50%;" placeholder="Tirar (2)" onchange="saveField('${charId}', 'dmg_roll', this.value)">
+                  <span style="color:#c5a059; font-weight:bold;">g</span>
+                  <input type="number" id="dmg_keep-${charId}" class="dice-input" style="width:50%;" placeholder="Guardar (2)" onchange="saveField('${charId}', 'dmg_keep', this.value)">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -898,6 +1009,7 @@
       grid.innerHTML = '';
 
       charactersData.forEach(char => {
+        currentRollTypes[char.id] = 'Ataque';
         const card = document.createElement('div');
         card.className = `player-card ${char.isMaster ? 'master-card' : ''}`;
         card.innerHTML = `
@@ -905,6 +1017,13 @@
           <div class="player-name">${char.name}</div>
 
           <div class="dice-roller-box">
+            <!-- Selector de Tipo de Tirada -->
+            <div class="roll-type-selector">
+              <button id="btn-ataque-${char.id}" class="type-btn active" onclick="setRollType('${char.id}', 'Ataque')">Ataque</button>
+              <button id="btn-dano-${char.id}" class="type-btn" onclick="setRollType('${char.id}', 'Daño')">Daño</button>
+              <button id="btn-otros-${char.id}" class="type-btn" onclick="setRollType('${char.id}', 'Otros')">Otros</button>
+            </div>
+
             <div class="dice-inputs">
               <div class="input-group">
                 <label>Tirar</label>
@@ -951,6 +1070,7 @@
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
+      const rollType = currentRollTypes[charId] || 'Otros';
       
       let numRoll = parseInt(rollNumInput.value) || 1;
       let numKeep = parseInt(keepNumInput.value) || 1;
@@ -994,6 +1114,7 @@
 
       if (typeof window.saveRollToFirebase === 'function') {
         window.saveRollToFirebase(charId, {
+          type: rollType,
           numRoll,
           numKeep,
           totalSum,
