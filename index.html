@@ -136,34 +136,48 @@
     /* --- ESTILOS DEL CONTROL DE INICIATIVA CON ARRASTRE --- */
     .initiative-bar {
       width: 100%;
-      max-width: 1400px;
       background: rgba(15, 15, 15, 0.92);
       border: 1px solid rgba(197, 160, 89, 0.5);
       border-radius: 8px;
-      padding: 10px 15px;
-      margin-bottom: 20px;
+      padding: 12px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .init-portraits-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 5px 0;
+      width: 100%;
+      border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+      padding-bottom: 10px;
+    }
+
+    .init-actions-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .init-round-box {
       display: flex;
       align-items: center;
       gap: 8px;
-      border-right: 1px solid rgba(197, 160, 89, 0.3);
-      padding-right: 15px;
     }
 
     .init-round-btn {
       background: rgba(40, 40, 40, 0.8);
       border: 1px solid rgba(197, 160, 89, 0.4);
       color: #c5a059;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
@@ -186,18 +200,15 @@
     }
 
     .init-round-num {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       color: #fff;
     }
 
-    .init-portraits-container {
+    .init-controls {
       display: flex;
+      gap: 6px;
       align-items: center;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 5px 0;
-      flex: 1;
     }
 
     .init-card {
@@ -252,14 +263,6 @@
 
     .init-card.active .init-name {
       color: #55ff55;
-    }
-
-    .init-controls {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      border-left: 1px solid rgba(197, 160, 89, 0.3);
-      padding-left: 15px;
     }
 
     .init-btn {
@@ -785,10 +788,6 @@
         text-align: center;
       }
 
-      .initiative-bar {
-        flex-wrap: wrap;
-      }
-
       .haiku-columns {
         flex-direction: column;
       }
@@ -826,51 +825,55 @@
     <section id="page-inicio" class="page-section active">
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
       
-      <!-- BANNER DE CONTROL DE INICIATIVA CON ARRASTRE -->
-      <div class="initiative-bar">
-        <div class="init-round-box">
-          <button class="init-round-btn" onclick="changeRound(-1)">-</button>
-          <div style="display:flex; flex-direction:column; align-items:center;">
-            <span class="init-round-title">Ronda</span>
-            <span class="init-round-num" id="init-round-display">1</span>
-          </div>
-          <button class="init-round-btn" onclick="changeRound(1)">+</button>
-        </div>
-
-        <div class="init-portraits-container" id="init-portraits-box"></div>
-
-        <div class="init-controls">
-          <button class="init-btn danger" onclick="resetInitiative()">Reiniciar Iniciativa</button>
-        </div>
-      </div>
-
       <!-- Cuadrícula de jugadores y dados -->
       <div class="players-grid" id="main-dice-grid"></div>
 
-      <!-- --- MAPA TÁCTICO INTEGRADO DEBAJO DE LOS DADOS --- -->
+      <!-- --- MAPA TÁCTICO Y BOTONERA UNIFICADA --- -->
       <div style="width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; border-top: 2px solid rgba(197, 160, 89, 0.4); padding-top: 25px;">
         <h2 style="color: #c5a059; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; text-align: center;">Mapa Táctico de Batalla</h2>
         
-        <!-- Barra de Herramientas del Mapa -->
-        <div style="display: flex; gap: 10px; background: rgba(15, 15, 15, 0.9); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(197, 160, 89, 0.4); flex-wrap: wrap; align-items: center;">
-          <button class="init-btn" onclick="setMapTool('draw')">✏️ Dibujar</button>
-          <button class="init-btn" onclick="setMapTool('erase')">🧹 Borrar trazos</button>
-          <label style="color: #c5a059; font-weight: bold; display: flex; align-items: center; gap: 5px; font-size: 11px;">
-            Color: <input type="color" id="map-color" value="#c5a059" style="background:none; border:none; width:25px; height:25px; cursor:pointer;">
-          </label>
-          <button class="init-btn danger" onclick="clearMapCanvas()">Limpiar Lienzo</button>
+        <!-- Bloque contenedor unificado de la Botonera de Batalla -->
+        <div style="width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 10px; background: rgba(15, 15, 15, 0.95); padding: 15px; border-radius: 8px; border: 1px solid rgba(197, 160, 89, 0.5);">
           
-          <div style="border-left: 1px solid rgba(197,160,89,0.3); margin-left: 5px; padding-left: 15px; display: flex; gap: 10px;">
-            <button class="init-btn" onclick="addMasterTurn()">👹 + Token Master</button>
-            <button class="init-btn danger" onclick="removeMasterTurn()">- Token Master</button>
+          <!-- BLOQUE DE INICIATIVA MODIFICADO: Tokens arriba solos, botones abajo -->
+          <div class="initiative-bar">
+            <!-- Tira de retratos / tokens de iniciativa (Línea propia) -->
+            <div class="init-portraits-container" id="init-portraits-box"></div>
+
+            <!-- Fila de acciones y control inferior -->
+            <div class="init-actions-row">
+              <div class="init-round-box">
+                <button class="init-round-btn" onclick="changeRound(-1)">-</button>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <span class="init-round-title">Ronda</span>
+                  <span class="init-round-num" id="init-round-display">1</span>
+                </div>
+                <button class="init-round-btn" onclick="changeRound(1)">+</button>
+              </div>
+
+              <div class="init-controls">
+                <button class="init-btn" onclick="addMasterTurn()">+ Token Master</button>
+                <button class="init-btn danger" onclick="removeMasterTurn()">- Token Master</button>
+                <button class="init-btn danger" onclick="resetInitiative()">Reiniciar</button>
+              </div>
+            </div>
           </div>
+
+          <!-- Herramientas de Dibujo -->
+          <div style="display: flex; gap: 10px; background: rgba(0, 0, 0, 0.3); padding: 8px 15px; border-radius: 6px; border: 1px solid rgba(197, 160, 89, 0.3); flex-wrap: wrap; align-items: center; justify-content: center;">
+            <button class="init-btn" onclick="setMapTool('draw')">✏️ Dibujar</button>
+            <button class="init-btn" onclick="setMapTool('erase')">🧹 Borrar trazos</button>
+            <label style="color: #c5a059; font-weight: bold; display: flex; align-items: center; gap: 5px; font-size: 11px;">
+              Color: <input type="color" id="map-color" value="#c5a059" style="background:none; border:none; width:25px; height:25px; cursor:pointer;">
+            </label>
+            <button class="init-btn danger" onclick="clearMapCanvas()">Limpiar Lienzo</button>
+          </div>
+
         </div>
 
         <!-- Contenedor del Mapa con Cuadrícula y Tokens -->
         <div id="tactical-map-container" style="position: relative; width: 100%; max-width: 1100px; height: 600px; border: 2px solid #c5a059; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); overflow: hidden; cursor: crosshair;">
-          <!-- Canvas para los trazos libres -->
           <canvas id="map-canvas" width="1100" height="600" style="position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%;"></canvas>
-          <!-- Contenedor donde se arrastran las fichas/tokens -->
           <div id="map-tokens-layer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
         </div>
         <div style="font-size: 10px; color: #aaa; text-align: center; margin-bottom: 30px;">
@@ -943,7 +946,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Synchronizer de Iniciativa en Firebase
     window.saveInitiativeState = function(state) {
       set(ref(db, 'initiative'), state);
     };
@@ -958,17 +960,14 @@
       }
     });
 
-    // Guardar Tiradas de Dados
     window.saveRollToFirebase = function(charId, rollData) {
       set(ref(db, 'rolls/' + charId), rollData);
     };
 
-    // Guardar Campos de Ficha
     window.saveField = function(charId, field, value) {
       set(ref(db, `sheets/${charId}/${field}`), value);
     };
 
-    // Sincronización del Mapa Táctico en Firebase
     window.saveMapDrawing = function(drawingData) {
       set(ref(db, 'map/drawing'), drawingData);
     };
@@ -984,7 +983,6 @@
       set(ref(db, 'map/tokens'), tokensState);
     };
 
-    // VERIFICACIÓN SEGURA DE TOKENS: Evita que clientes desincronizados borren el mapa
     const dbRef = ref(db);
     get(child(dbRef, 'map/tokens')).then((snapshot) => {
       const defaultTokens = typeof window.getDefaultTokens === 'function' ? window.getDefaultTokens() : {};
@@ -1002,7 +1000,6 @@
       console.error(error);
     });
 
-    // Escuchar cambios en tiempo real del mapa de tokens de forma segura
     onValue(ref(db, 'map/tokens'), (snapshot) => {
       const data = snapshot.val();
       const defaultTokens = typeof window.getDefaultTokens === 'function' ? window.getDefaultTokens() : {};
@@ -1014,7 +1011,6 @@
       }
     });
 
-    // Sincronización de Dados
     charactersData.forEach(char => {
       onValue(ref(db, 'rolls/' + char.id), (snapshot) => {
         const data = snapshot.val();
@@ -1039,7 +1035,6 @@
       });
     });
 
-    // Sincronización de Fichas
     charactersData.filter(c => !c.isMaster).forEach(char => {
       onValue(ref(db, `sheets/${char.id}`), (snapshot) => {
         const data = snapshot.val();
@@ -1247,7 +1242,6 @@
     window.removeMasterTurn = removeMasterTurn;
     window.resetInitiative = resetInitiative;
 
-    // --- LÓGICA DEL MAPA TÁCTICO ---
     let isDrawing = false;
     let currentTool = 'draw'; 
     let mapCanvas, mapCtx;
@@ -1270,25 +1264,9 @@
       if (!mapCanvas) return;
       mapCtx = mapCanvas.getContext('2d');
 
-      // Eventos de Ratón (PC)
       mapCanvas.addEventListener('mousedown', startDrawing);
       mapCanvas.addEventListener('mousemove', drawOnMap);
       window.addEventListener('mouseup', stopDrawing);
-
-      // Eventos Táctiles (Móvil / Tablet)
-      mapCanvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        startDrawing({ clientX: touch.clientX, clientY: touch.clientY });
-      }, { passive: false });
-
-      mapCanvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        drawOnMap({ clientX: touch.clientX, clientY: touch.clientY });
-      }, { passive: false });
-
-      window.addEventListener('touchend', stopDrawing);
 
       renderMapTokens();
     }
@@ -1376,7 +1354,6 @@
         let isDraggingToken = false;
         let startX, startY;
 
-        // Eventos de Ratón (PC)
         el.addEventListener('mousedown', (e) => {
           isDraggingToken = true;
           startX = e.clientX - tokenData.x;
@@ -1393,34 +1370,6 @@
         });
 
         window.addEventListener('mouseup', () => {
-          if (isDraggingToken) {
-            isDraggingToken = false;
-            if (window.saveMapTokens) {
-              window.saveMapTokens(window.mapTokensState);
-            }
-          }
-        });
-
-        // Eventos Táctiles (Móvil)
-        el.addEventListener('touchstart', (e) => {
-          isDraggingToken = true;
-          const touch = e.touches[0];
-          startX = touch.clientX - tokenData.x;
-          startY = touch.clientY - tokenData.y;
-          e.stopPropagation();
-          e.preventDefault();
-        }, { passive: false });
-
-        window.addEventListener('touchmove', (e) => {
-          if (!isDraggingToken) return;
-          const touch = e.touches[0];
-          tokenData.x = touch.clientX - startX;
-          tokenData.y = touch.clientY - startY;
-          el.style.left = `${tokenData.x}px`;
-          el.style.top = `${tokenData.y}px`;
-        }, { passive: false });
-
-        window.addEventListener('touchend', () => {
           if (isDraggingToken) {
             isDraggingToken = false;
             if (window.saveMapTokens) {
