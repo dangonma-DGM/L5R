@@ -1270,9 +1270,25 @@
       if (!mapCanvas) return;
       mapCtx = mapCanvas.getContext('2d');
 
+      // Eventos de Ratón (PC)
       mapCanvas.addEventListener('mousedown', startDrawing);
       mapCanvas.addEventListener('mousemove', drawOnMap);
       window.addEventListener('mouseup', stopDrawing);
+
+      // Eventos Táctiles (Móvil / Tablet)
+      mapCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        startDrawing({ clientX: touch.clientX, clientY: touch.clientY });
+      }, { passive: false });
+
+      mapCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        drawOnMap({ clientX: touch.clientX, clientY: touch.clientY });
+      }, { passive: false });
+
+      window.addEventListener('touchend', stopDrawing);
 
       renderMapTokens();
     }
@@ -1360,6 +1376,7 @@
         let isDraggingToken = false;
         let startX, startY;
 
+        // Eventos de Ratón (PC)
         el.addEventListener('mousedown', (e) => {
           isDraggingToken = true;
           startX = e.clientX - tokenData.x;
@@ -1376,6 +1393,34 @@
         });
 
         window.addEventListener('mouseup', () => {
+          if (isDraggingToken) {
+            isDraggingToken = false;
+            if (window.saveMapTokens) {
+              window.saveMapTokens(window.mapTokensState);
+            }
+          }
+        });
+
+        // Eventos Táctiles (Móvil)
+        el.addEventListener('touchstart', (e) => {
+          isDraggingToken = true;
+          const touch = e.touches[0];
+          startX = touch.clientX - tokenData.x;
+          startY = touch.clientY - tokenData.y;
+          e.stopPropagation();
+          e.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+          if (!isDraggingToken) return;
+          const touch = e.touches[0];
+          tokenData.x = touch.clientX - startX;
+          tokenData.y = touch.clientY - startY;
+          el.style.left = `${tokenData.x}px`;
+          el.style.top = `${tokenData.y}px`;
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
           if (isDraggingToken) {
             isDraggingToken = false;
             if (window.saveMapTokens) {
