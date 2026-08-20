@@ -330,7 +330,7 @@
     /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
       width: 100%;
       max-width: 1400px;
@@ -431,7 +431,7 @@
 
     .dice-inputs {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       justify-content: space-around;
     }
 
@@ -440,22 +440,23 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
+      flex: 1;
     }
 
     .input-group label {
-      font-size: 10px;
+      font-size: 9px;
       color: #aaa;
       text-transform: uppercase;
     }
 
     .dice-input {
-      width: 50px;
+      width: 100%;
       background: #111;
       border: 1px solid #c5a059;
       color: #fff;
       text-align: center;
-      padding: 5px;
-      font-size: 13px;
+      padding: 5px 2px;
+      font-size: 12px;
       font-weight: bold;
       border-radius: 4px;
       outline: none;
@@ -1055,9 +1056,10 @@
             }
             const historyEntry = document.createElement('div');
             historyEntry.className = 'history-entry';
+            const modSign = data.modVal ? (data.modVal > 0 ? `+${data.modVal}` : `${data.modVal}`) : '';
             historyEntry.innerHTML = `
-              <strong>[${data.type || 'Tirada'}] ${data.numRoll}g${data.numKeep}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
-              <br><span style="font-size:9px;">Dados: ${data.diceDetailsStr}</span>
+              <strong>[${data.type || 'Tirada'}] ${data.numRoll}g${data.numKeep}${modSign}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span>
+              <br><span style="font-size:9px;">Dados: ${data.diceDetailsStr} ${data.modVal ? `(Mod: ${modSign})` : ''}</span>
             `;
             historyBox.prepend(historyEntry);
           }
@@ -1462,6 +1464,7 @@
 
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
+      const rollModInput = document.getElementById(`roll-mod-${charId}`);
 
       if (!rollNumInput || !keepNumInput) return;
 
@@ -1470,12 +1473,15 @@
       if (type === 'Ataque') {
         rollNumInput.value = sheet.atk_roll !== undefined && sheet.atk_roll !== '' ? sheet.atk_roll : 5;
         keepNumInput.value = sheet.atk_keep !== undefined && sheet.atk_keep !== '' ? sheet.atk_keep : 2;
+        if (rollModInput) rollModInput.value = sheet.atk_mod !== undefined && sheet.atk_mod !== '' ? sheet.atk_mod : 0;
       } else if (type === 'Daño') {
         rollNumInput.value = sheet.dmg_roll !== undefined && sheet.dmg_roll !== '' ? sheet.dmg_roll : 2;
         keepNumInput.value = sheet.dmg_keep !== undefined && sheet.dmg_keep !== '' ? sheet.dmg_keep : 2;
+        if (rollModInput) rollModInput.value = sheet.dmg_mod !== undefined && sheet.dmg_mod !== '' ? sheet.dmg_mod : 0;
       } else {
         rollNumInput.value = 1;
         keepNumInput.value = 1;
+        if (rollModInput) rollModInput.value = 0;
       }
     }
 
@@ -1582,21 +1588,23 @@
             <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;">
               ⚔️ Fórmulas de Ataque y Daño (Sincronizadas con Mesa de Dados)
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
               <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Ataque (Tirar g Guardar)</label>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <input type="number" id="atk_roll-${charId}" class="dice-input" style="width:50%;" placeholder="Tirar (5)" onchange="saveField('${charId}', 'atk_roll', this.value)">
+                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Ataque (Tirar g Guardar ± Mod)</label>
+                <div style="display:flex; align-items:center; gap:4px;">
+                  <input type="number" id="atk_roll-${charId}" class="dice-input" style="width:36%;" placeholder="Tirar" onchange="saveField('${charId}', 'atk_roll', this.value)">
                   <span style="color:#c5a059; font-weight:bold;">g</span>
-                  <input type="number" id="atk_keep-${charId}" class="dice-input" style="width:50%;" placeholder="Guardar (2)" onchange="saveField('${charId}', 'atk_keep', this.value)">
+                  <input type="number" id="atk_keep-${charId}" class="dice-input" style="width:36%;" placeholder="Guardar" onchange="saveField('${charId}', 'atk_keep', this.value)">
+                  <input type="number" id="atk_mod-${charId}" class="dice-input" style="width:28%;" placeholder="Mod" value="0" onchange="saveField('${charId}', 'atk_mod', this.value)">
                 </div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Fórmula de Daño (Tirar g Guardar)</label>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <input type="number" id="dmg_roll-${charId}" class="dice-input" style="width:50%;" placeholder="Tirar (2)" onchange="saveField('${charId}', 'dmg_roll', this.value)">
+                <label style="color:#aaa; font-size:10px; text-transform:uppercase;">Daño (Tirar g Guardar ± Mod)</label>
+                <div style="display:flex; align-items:center; gap:4px;">
+                  <input type="number" id="dmg_roll-${charId}" class="dice-input" style="width:36%;" placeholder="Tirar" onchange="saveField('${charId}', 'dmg_roll', this.value)">
                   <span style="color:#c5a059; font-weight:bold;">g</span>
-                  <input type="number" id="dmg_keep-${charId}" class="dice-input" style="width:50%;" placeholder="Guardar (2)" onchange="saveField('${charId}', 'dmg_keep', this.value)">
+                  <input type="number" id="dmg_keep-${charId}" class="dice-input" style="width:36%;" placeholder="Guardar" onchange="saveField('${charId}', 'dmg_keep', this.value)">
+                  <input type="number" id="dmg_mod-${charId}" class="dice-input" style="width:28%;" placeholder="Mod" value="0" onchange="saveField('${charId}', 'dmg_mod', this.value)">
                 </div>
               </div>
             </div>
@@ -1659,6 +1667,10 @@
                 <label>Guardar</label>
                 <input type="number" id="keep-num-${char.id}" class="dice-input" value="2" min="1" max="20">
               </div>
+              <div class="input-group">
+                <label>Mod</label>
+                <input type="number" id="roll-mod-${char.id}" class="dice-input" value="0">
+              </div>
             </div>
 
             <button class="roll-btn" onclick="rollL5RDice('${char.id}')">🎲 Lanzar Dados</button>
@@ -1696,10 +1708,12 @@
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
+      const rollModInput = document.getElementById(`roll-mod-${charId}`);
       const rollType = window.currentRollTypes[charId] || 'Otros';
       
       let numRoll = parseInt(rollNumInput.value) || 1;
       let numKeep = parseInt(keepNumInput.value) || 1;
+      let modVal = parseInt(rollModInput ? rollModInput.value : 0) || 0;
 
       if (numKeep > numRoll) numKeep = numRoll;
 
@@ -1725,7 +1739,8 @@
       diceResults.sort((a, b) => b.finalTotal - a.finalTotal);
 
       let keptDice = diceResults.slice(0, numKeep);
-      let totalSum = keptDice.reduce((acc, d) => acc + d.finalTotal, 0);
+      let baseSum = keptDice.reduce((acc, d) => acc + d.finalTotal, 0);
+      let totalSum = baseSum + modVal;
 
       let diceDetailsStr = diceResults.map((d, idx) => {
         let isKept = idx < numKeep;
@@ -1743,6 +1758,7 @@
           type: rollType,
           numRoll,
           numKeep,
+          modVal,
           totalSum,
           diceDetailsStr,
           timestamp: Date.now()
