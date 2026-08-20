@@ -761,6 +761,19 @@
       pointer-events: auto;
     }
 
+    /* --- Aviso de versión móvil para el mapa --- */
+    .mobile-map-warning {
+      display: none;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      color: #e0d8c3;
+      margin-top: 15px;
+    }
+
     /* --- Responsive --- */
     @media (max-width: 768px) {
       body {
@@ -790,6 +803,16 @@
 
       .haiku-columns {
         flex-direction: column;
+      }
+
+      /* Ocultar Mapa Táctico y Tokens en Móviles */
+      .desktop-tactical-map-section {
+        display: none !important;
+      }
+
+      /* Mostrar Aviso en Móviles */
+      .mobile-map-warning {
+        display: block !important;
       }
     }
   </style>
@@ -828,8 +851,8 @@
       <!-- Cuadrícula de jugadores y dados -->
       <div class="players-grid" id="main-dice-grid"></div>
 
-      <!-- --- MAPA TÁCTICO Y BOTONERA UNIFICADA --- -->
-      <div style="width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; border-top: 2px solid rgba(197, 160, 89, 0.4); padding-top: 25px;">
+      <!-- --- MAPA TÁCTICO Y BOTONERA UNIFICADA (Escritorio) --- -->
+      <div class="desktop-tactical-map-section" style="width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; border-top: 2px solid rgba(197, 160, 89, 0.4); padding-top: 25px;">
         <h2 style="color: #c5a059; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; text-align: center;">Mapa Táctico de Batalla</h2>
         
         <!-- Bloque contenedor unificado de la Botonera de Batalla -->
@@ -880,6 +903,13 @@
           * Arrastra los avatares directamente por la cuadrícula del mapa para moverlos tácticamente en tiempo real.
         </div>
       </div>
+
+      <!-- --- AVISO PARA VERSIÓN MÓVIL --- -->
+      <div class="mobile-map-warning">
+        <h3 style="color: #c5a059; font-size: 15px; margin-bottom: 8px; text-transform: uppercase;">Mapa Táctico y Tokens</h3>
+        <p style="font-size: 11px; color: #aaa;">El mapa interactivo y los tokens de iniciativa están optimizados para ordenadores y tablets. Utiliza una pantalla más grande para gestionar la posición táctica de los personajes[cite: 2].</p>
+      </div>
+
     </section>
 
     <!-- PÁGINAS DE FICHAS INDIVIDUALES -->
