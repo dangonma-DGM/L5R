@@ -1078,6 +1078,25 @@
       set(ref(db, `sheets/${charId}/${field}`), value);
     };
 
+    window.savePnjField = function(index, value) {
+      set(ref(db, `pnj/${index}/text`), value);
+    };
+
+    onValue(ref(db, 'pnj'), (snapshot) => {
+      const data = snapshot.val();
+      if (data && window.personajesPrincipalesData) {
+        data.forEach((item, index) => {
+          if (item && item.text !== undefined && window.personajesPrincipalesData[index]) {
+            window.personajesPrincipalesData[index].text = item.text;
+            const textareaEl = document.getElementById(`pnj-text-${index}`);
+            if (textareaEl && document.activeElement !== textareaEl) {
+              textareaEl.value = item.text;
+            }
+          }
+        });
+      }
+    });
+
     window.saveMapDrawing = function(drawingData) {
       set(ref(db, 'map/drawing'), drawingData);
     };
@@ -1504,9 +1523,11 @@
     ];
 
     const personajesPrincipalesData = [
-      { image: 'images/PP1.png', name: 'Personaje 1', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' },
-      { image: 'images/PP2.png', name: 'Personaje 2', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' }
+      { image: 'images/PP1.png', name: 'Kagashawa', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' },
+      { image: 'images/PP2.png', name: 'Miku', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' },
+	  { image: 'images/PP3.png', name: 'Raizen', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' }
     ];
+    window.personajesPrincipalesData = personajesPrincipalesData;
 
     const hasimaruDeck = [
       { image: 'images/Hasimaru/Hasimaru1.png', text: 'Festival de Hasimaru.' },
@@ -1917,17 +1938,12 @@
           </div>
           <div class="pnj-info-box">
             <h3>${pnj.name}</h3>
-            <textarea class="char-textarea" style="height: 90px;" placeholder="Escribe aquí un párrafo con información del PNJ..." onchange="updatePnjText(${index}, this.value)">${pnj.text}</textarea>
+            <textarea id="pnj-text-${index}" class="char-textarea" style="height: 90px;" placeholder="Escribe aquí un párrafo con información del PNJ..." onchange="savePnjField(${index}, this.value)">${pnj.text}</textarea>
           </div>
         `;
         container.appendChild(row);
       });
     }
-
-    window.updatePnjText = function(index, value) {
-      personajesPrincipalesData[index].text = value;
-      localStorage.setItem('leyenda_pnj_data', JSON.stringify(personajesPrincipalesData));
-    };
 
     function renderHaikus() {
       ['col1', 'col2', 'col3'].forEach((colKey, index) => {
@@ -1974,20 +1990,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const savedPnj = localStorage.getItem('leyenda_pnj_data');
-      if (savedPnj) {
-        try {
-          const parsed = JSON.parse(savedPnj);
-          if (Array.isArray(parsed)) {
-            personajesPrincipalesData.forEach((item, idx) => {
-              if (parsed[idx] && parsed[idx].text) {
-                item.text = parsed[idx].text;
-              }
-            });
-          }
-        } catch(e) {}
-      }
-
       renderInitiative();
       renderMainTable();
       initCharacters();
