@@ -293,7 +293,7 @@
       color: #fff;
     }
 
-    /* --- MAPA TÁCTICO Y TOKENS --- */
+    /* --- MAPA TÁCTICO Y TOKENS (Con recorte superior) --- */
     #tactical-map-container {
       background-image: linear-gradient(rgba(197, 160, 89, 0.15) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(197, 160, 89, 0.15) 1px, transparent 1px),
@@ -309,6 +309,8 @@
       border-radius: 50%;
       border: 2px solid #c5a059;
       object-fit: cover;
+      background-color: #000;
+      object-position: center top;
       cursor: grab;
       pointer-events: auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.8);
@@ -318,8 +320,9 @@
 
     .map-token.master-token {
       border-color: #ff5555;
-      object-fit: contain;
+      object-fit: cover;
       background-color: #000;
+      object-position: center top;
     }
 
     .map-token:active {
@@ -762,6 +765,63 @@
       pointer-events: auto;
     }
 
+    /* --- Estilos específicos para Personajes Principales (PNJ) --- */
+    .pnj-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .pnj-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(15, 15, 15, 0.88);
+      border: 1px solid rgba(197, 160, 89, 0.5);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .pnj-photo-box {
+      width: 140px;
+      height: 140px;
+      border-radius: 6px;
+      border: 2px solid rgba(197, 160, 89, 0.4);
+      background: rgba(10, 10, 10, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .pnj-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .pnj-info-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pnj-info-box h3 {
+      color: #c5a059;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+      padding-bottom: 4px;
+    }
+
     /* --- Aviso de versión móvil para el mapa --- */
     .mobile-map-warning {
       display: none;
@@ -806,6 +866,12 @@
         flex-direction: column;
       }
 
+      .pnj-row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
       /* Ocultar Mapa Táctico y Tokens en Móviles */
       .desktop-tactical-map-section {
         display: none !important;
@@ -836,7 +902,9 @@
 
       <div class="nav-group-title">Herramientas</div>
       <button class="nav-btn" onclick="switchTab('bonos')">Bonos</button>
+      <button class="nav-btn" onclick="switchTab('personajes-principales')">Personajes Principales</button>
       <button class="nav-btn" onclick="switchTab('hasimaru')">Hasimaru</button>
+      <button class="nav-btn" onclick="switchTab('tadasuna')">Tadasuna</button>
       <button class="nav-btn" onclick="switchTab('haikus')">Haikus</button>
       <button class="nav-btn" onclick="switchTab('notas')">Notas General</button>
     </nav>
@@ -935,9 +1003,20 @@
       <div class="deck-container" id="deck-bonos"></div>
     </section>
 
+    <!-- PERSONAJES PRINCIPALES (PNJ) -->
+    <section id="page-personajes-principales" class="page-section">
+      <h2 class="table-title">Personajes Principales</h2>
+      <div class="pnj-grid" id="pnj-grid-container"></div>
+    </section>
+
     <!-- HASIMARU -->
     <section id="page-hasimaru" class="page-section">
       <div class="deck-container" id="deck-hasimaru"></div>
+    </section>
+
+    <!-- TADASUNA -->
+    <section id="page-tadasuna" class="page-section">
+      <div class="deck-container" id="deck-tadasuna"></div>
     </section>
 
     <!-- HAIKUS -->
@@ -1225,9 +1304,9 @@
         state.turnOrder.splice(lastMaster.idx, 1);
 
         if (typeof window.saveInitiativeState === 'function') {
-          window.saveInitiativeState(state);
+            window.saveInitiativeState(state);
         } else {
-          renderInitiative();
+            renderInitiative();
         }
 
         if (window.mapTokensState && window.mapTokensState[lastMaster.item.id]) {
@@ -1424,6 +1503,11 @@
       { image: 'images/Bonos/santuario Kitsune.png', text: 'Explora el misterioso Santuario Kitsune, hogar de los espíritus zorro legendarios.' }
     ];
 
+    const personajesPrincipalesData = [
+      { image: 'images/PP1.png', name: 'Personaje 1', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' },
+      { image: 'images/PP2.png', name: 'Personaje 2', text: 'Escribe aquí un párrafo con información relevante sobre este personaje principal.' }
+    ];
+
     const hasimaruDeck = [
       { image: 'images/Hasimaru/Hasimaru1.png', text: 'Festival de Hasimaru.' },
       { image: 'images/Hasimaru/Hasimaru2.png', text: 'Hermansos Goro Y Boro, guardianes del templo.' },
@@ -1435,6 +1519,11 @@
       { image: 'images/Hasimaru/Hasimaru8.png', text: 'Cultivos secretos.' },
       { image: 'images/Hasimaru/Hasimaru9.png', text: 'Takezo.' },
       { image: 'images/Hasimaru/Hasimaru10.png', text: 'Akodo Masaru.' }
+    ];
+
+    const tadasunaDeck = [
+      { image: 'images/Tadasuna1.png', text: 'Tadasuna - Contenido de ejemplo 1.' },
+      { image: 'images/Tadasuna2.png', text: 'Tadasuna - Contenido de ejemplo 2.' }
     ];
 
     const haikuParts = {
@@ -1775,8 +1864,9 @@
       return copy;
     }
 
-    function renderDeck(containerId, deckData, shouldShuffle = false, isHasimaru = false) {
+    function renderDeck(containerId, deckData, shouldShuffle = false, isFlipCard = false) {
       const container = document.getElementById(containerId);
+      if (!container) return;
       container.innerHTML = ''; 
       const deckToRender = shouldShuffle ? shuffleArray(deckData) : deckData;
 
@@ -1793,7 +1883,7 @@
 
         cardContainer.addEventListener('click', () => {
           const card = cardContainer.querySelector('.card');
-          if (isHasimaru) {
+          if (isFlipCard) {
             card.classList.toggle('flipped');
             cardContainer.classList.toggle('bring-to-front');
           } else {
@@ -1813,9 +1903,36 @@
       });
     }
 
+    function renderPersonajesPrincipales() {
+      const container = document.getElementById('pnj-grid-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      personajesPrincipalesData.forEach((pnj, index) => {
+        const row = document.createElement('div');
+        row.className = 'pnj-row';
+        row.innerHTML = `
+          <div class="pnj-photo-box">
+            <img src="${pnj.image}" alt="${pnj.name}" onerror="this.src='images/icono.png';">
+          </div>
+          <div class="pnj-info-box">
+            <h3>${pnj.name}</h3>
+            <textarea class="char-textarea" style="height: 90px;" placeholder="Escribe aquí un párrafo con información del PNJ..." onchange="updatePnjText(${index}, this.value)">${pnj.text}</textarea>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    window.updatePnjText = function(index, value) {
+      personajesPrincipalesData[index].text = value;
+      localStorage.setItem('leyenda_pnj_data', JSON.stringify(personajesPrincipalesData));
+    };
+
     function renderHaikus() {
       ['col1', 'col2', 'col3'].forEach((colKey, index) => {
         const container = document.getElementById(`haiku-col-${index + 1}`);
+        if (!container) return;
         container.querySelectorAll('.card-container').forEach(el => el.remove());
 
         haikuParts[colKey].forEach((text) => {
@@ -1850,16 +1967,34 @@
       if (activeBtn) activeBtn.classList.add('active');
 
       if (tabName === 'bonos') renderDeck('deck-bonos', bonosDeck, true, false);
+      else if (tabName === 'personajes-principales') renderPersonajesPrincipales();
       else if (tabName === 'hasimaru') renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      else if (tabName === 'tadasuna') renderDeck('deck-tadasuna', tadasunaDeck, false, true);
       else if (tabName === 'haikus') renderHaikus();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      const savedPnj = localStorage.getItem('leyenda_pnj_data');
+      if (savedPnj) {
+        try {
+          const parsed = JSON.parse(savedPnj);
+          if (Array.isArray(parsed)) {
+            personajesPrincipalesData.forEach((item, idx) => {
+              if (parsed[idx] && parsed[idx].text) {
+                item.text = parsed[idx].text;
+              }
+            });
+          }
+        } catch(e) {}
+      }
+
       renderInitiative();
       renderMainTable();
       initCharacters();
       renderDeck('deck-bonos', bonosDeck, true, false);
+      renderPersonajesPrincipales();
       renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      renderDeck('deck-tadasuna', tadasunaDeck, false, true);
       renderHaikus();
       initTacticalMap();
 
