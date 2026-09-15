@@ -367,6 +367,65 @@
       border-radius: 4px;
     }
 
+    /* --- NUEVO MODAL DE GALERÍA ESTÁTICA --- */
+    #static-gallery-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .static-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      max-height: 60vh;
+      overflow-y: auto;
+      width: 100%;
+      padding: 10px;
+    }
+
+    .static-gallery-item {
+      background: rgba(30, 30, 30, 0.8);
+      border: 1px solid rgba(197, 160, 89, 0.4);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .static-gallery-item:hover {
+      border-color: #c5a059;
+      transform: scale(1.05);
+      background: rgba(197, 160, 89, 0.2);
+    }
+
+    .static-gallery-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+
+    .static-gallery-item span {
+      font-size: 9px;
+      color: #e0d8c3;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
     /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
       display: grid;
@@ -1016,9 +1075,14 @@
             </div>
             
             <!-- Botón Cargar Imagen (Oculta un input file nativo) -->
-            <input type="file" id="map-image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button class="init-btn" style="width: 100%; text-align: center; padding: 10px;" onclick="document.getElementById('map-image-input').click()">
-              📁 Cargar Imagen
+            <!-- <input type="file" id="map-image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)"> -->
+            <!-- <button class="init-btn" style="width: 100%; text-align: center; padding: 10px;" onclick="document.getElementById('map-image-input').click()"> -->
+              <!-- 📁 Cargar Archivo -->
+            <!-- </button> -->
+
+            <!-- Botón para abrir la Galería Estática Modal -->
+            <button class="init-btn" style="width: 100%; text-align: center; padding: 10px;" onclick="openStaticGalleryModal()">
+              🖼️ Galería Estática
             </button>
           </div>
 
@@ -1094,12 +1158,23 @@
 
   </main>
 
-  <!-- VENTANA FLOTANTE (MODAL) PARA LA IMAGEN CARGADA -->
+  <!-- VENTANA FLOTANTE (MODAL) PARA LA IMAGEN CARGADA / COMPARTIDA -->
   <div id="image-modal-overlay">
     <div class="modal-content-box">
       <div style="color: #c5a059; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Imagen Compartida</div>
       <img id="modal-preview-img" class="modal-image-preview" src="" alt="Imagen cargada">
       <button class="init-btn danger" style="padding: 8px 20px;" onclick="closeImageModal()">Cerrar / Ocultar Imagen</button>
+    </div>
+  </div>
+
+  <!-- NUEVA VENTANA FLOTANTE (MODAL) PARA SELECCIONAR IMÁGENES ESTÁTICAS -->
+  <div id="static-gallery-overlay">
+    <div class="modal-content-box" style="width: 500px;">
+      <div style="color: #c5a059; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Galería de Imágenes Estáticas</div>
+      <div class="static-gallery-grid" id="static-gallery-grid-items">
+        <!-- Se rellenará dinámicamente mediante JS -->
+      </div>
+      <button class="init-btn danger" style="padding: 8px 20px;" onclick="closeStaticGalleryModal()">Cerrar</button>
     </div>
   </div>
 
@@ -1553,17 +1628,15 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const base64Image = e.target.result;
-        // Envía la imagen a Firebase para que se abra automáticamente en la pantalla de TODOS
         if (typeof window.saveSharedImage === 'function') {
           window.saveSharedImage(base64Image);
         }
       };
       reader.readAsDataURL(file);
-      event.target.value = ''; // Limpiar input
+      event.target.value = ''; 
     }
 
     function closeImageModal() {
-      // Borra la imagen compartida en Firebase para que se cierre la ventana de todos
       if (typeof window.saveSharedImage === 'function') {
         window.saveSharedImage(null);
       } else {
@@ -1572,8 +1645,56 @@
       }
     }
 
+    /* --- LÓGICA DE LA GALERÍA ESTÁTICA MODAL --- */
+    const staticGalleryImages = [
+      { name: 'Kasai 1', url: 'images/Kasai1.png' },
+      { name: 'Kasai 2', url: 'images/Kasai2.png' },
+      { name: 'Nite 1', url: 'images/Nite1.png' },
+      { name: 'Nite 2', url: 'images/Nite2.png' },
+      { name: 'Takasi 1', url: 'images/Takasi1.png' },
+      { name: 'Takasi 2', url: 'images/Takasi2.png' },
+      { name: 'Ukio 1', url: 'images/Ukio1.png' },
+      { name: 'Ukio 2', url: 'images/Ukio2.png' },
+      { name: 'Master', url: 'images/Master.png' },
+      { name: 'Haikus Bono', url: 'images/Bonos/Haikus.png' },
+      { name: 'Termas', url: 'images/Bonos/termas.png' },
+      { name: 'Santuario Kitsune', url: 'images/Bonos/santuario Kitsune.png' }
+    ];
+
+    function openStaticGalleryModal() {
+      const overlay = document.getElementById('static-gallery-overlay');
+      const grid = document.getElementById('static-gallery-grid-items');
+      if (!overlay || !grid) return;
+
+      grid.innerHTML = '';
+      staticGalleryImages.forEach(img => {
+        const item = document.createElement('div');
+        item.className = 'static-gallery-item';
+        item.innerHTML = `
+          <img src="${img.url}" onerror="this.src='images/icono.png';">
+          <span>${img.name}</span>
+        `;
+        item.addEventListener('click', () => {
+          if (typeof window.saveSharedImage === 'function') {
+            window.saveSharedImage(img.url);
+          }
+          closeStaticGalleryModal();
+        });
+        grid.appendChild(item);
+      });
+
+      overlay.style.display = 'flex';
+    }
+
+    function closeStaticGalleryModal() {
+      const overlay = document.getElementById('static-gallery-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+
     window.handleImageUpload = handleImageUpload;
     window.closeImageModal = closeImageModal;
+    window.openStaticGalleryModal = openStaticGalleryModal;
+    window.closeStaticGalleryModal = closeStaticGalleryModal;
 
     function renderMapTokens() {
       const layer = document.getElementById('map-tokens-layer');
