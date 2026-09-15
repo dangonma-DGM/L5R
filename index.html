@@ -1097,9 +1097,9 @@
   <!-- VENTANA FLOTANTE (MODAL) PARA LA IMAGEN CARGADA -->
   <div id="image-modal-overlay">
     <div class="modal-content-box">
-      <div style="color: #c5a059; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Imagen Cargada</div>
+      <div style="color: #c5a059; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Imagen Compartida</div>
       <img id="modal-preview-img" class="modal-image-preview" src="" alt="Imagen cargada">
-      <button class="init-btn danger" style="padding: 8px 20px;" onclick="closeImageModal()">Cerrar / Volver a Mesa de Dados</button>
+      <button class="init-btn danger" style="padding: 8px 20px;" onclick="closeImageModal()">Cerrar / Ocultar Imagen</button>
     </div>
   </div>
 
@@ -1176,6 +1176,24 @@
     window.saveMapTokens = function(tokensState) {
       set(ref(db, 'map/tokens'), tokensState);
     };
+
+    // Sincronización en tiempo real de la imagen compartida para todos los jugadores
+    window.saveSharedImage = function(dataUrl) {
+      set(ref(db, 'map/shared_image'), dataUrl);
+    };
+
+    onValue(ref(db, 'map/shared_image'), (snapshot) => {
+      const dataUrl = snapshot.val();
+      const modalOverlay = document.getElementById('image-modal-overlay');
+      const modalImg = document.getElementById('modal-preview-img');
+      
+      if (dataUrl && modalOverlay && modalImg) {
+        modalImg.src = dataUrl;
+        modalOverlay.style.display = 'flex';
+      } else if (!dataUrl && modalOverlay) {
+        modalOverlay.style.display = 'none';
+      }
+    });
 
     const dbRef = ref(db);
     get(child(dbRef, 'map/tokens')).then((snapshot) => {
@@ -1527,29 +1545,30 @@
       }
     }
 
-    /* --- LÓGICA DE CARGA DE IMAGEN Y VENTANA FLOTANTE --- */
+    /* --- LÓGICA DE CARGA DE IMAGEN COMPARTIDA --- */
     function handleImageUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const modalOverlay = document.getElementById('image-modal-overlay');
-        const modalImg = document.getElementById('modal-preview-img');
-        if (modalOverlay && modalImg) {
-          modalImg.src = e.target.result;
-          modalOverlay.style.display = 'flex';
+        const base64Image = e.target.result;
+        // Envía la imagen a Firebase para que se abra automáticamente en la pantalla de TODOS
+        if (typeof window.saveSharedImage === 'function') {
+          window.saveSharedImage(base64Image);
         }
       };
       reader.readAsDataURL(file);
-      // Limpiar el input para permitir recargar la misma imagen si se desea
-      event.target.value = '';
+      event.target.value = ''; // Limpiar input
     }
 
     function closeImageModal() {
-      const modalOverlay = document.getElementById('image-modal-overlay');
-      if (modalOverlay) {
-        modalOverlay.style.display = 'none';
+      // Borra la imagen compartida en Firebase para que se cierre la ventana de todos
+      if (typeof window.saveSharedImage === 'function') {
+        window.saveSharedImage(null);
+      } else {
+        const modalOverlay = document.getElementById('image-modal-overlay');
+        if (modalOverlay) modalOverlay.style.display = 'none';
       }
     }
 
