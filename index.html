@@ -487,6 +487,59 @@
       font-weight: bold;
     }
 
+    /* --- SELECTOR DINÁMICO DE CARPETAS DE GALERÍA --- */
+    .static-gallery-folder-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .static-gallery-folder-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(197, 160, 89, 0.6);
+      border-radius: 5px;
+      color: #e0d8c3;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .static-gallery-folder-input:focus {
+      border-color: #c5a059;
+      box-shadow: 0 0 8px rgba(197, 160, 89, 0.2);
+    }
+
+    .static-gallery-folder-button {
+      width: 100%;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .static-gallery-folder-help {
+      color: #999;
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .static-gallery-back-button {
+      align-self: flex-start;
+      margin-bottom: 5px;
+    }
+
+    .static-gallery-status {
+      color: #c5a059;
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+
     /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
       display: grid;
@@ -1612,11 +1665,11 @@
 
     function getDefaultTokens() {
       return {
-        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai', init: '', damage: '' },
-        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite', init: '', damage: '' },
-        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi', init: '', damage: '' },
-        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio', init: '', damage: '' },
-        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true, init: '', damage: '' }
+        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
+        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
+        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
+        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
+        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
       };
     }
     window.getDefaultTokens = getDefaultTokens;
@@ -1722,44 +1775,319 @@
     }
 
     /* --- LÓGICA DE LA GALERÍA ESTÁTICA MODAL --- */
+
+    /*
+     * GALERÍA DINÁMICA POR CARPETA
+     *
+     * No es necesario declarar las carpetas aquí.
+     *
+     * El usuario escribe el nombre de la carpeta en el buscador.
+     *
+     * Si escribimos:
+     *     Hasimaru
+     *
+     * se buscarán automáticamente:
+     *     images/Hasimaru/Hasimaru1.png
+     *     images/Hasimaru/Hasimaru2.png
+     *     images/Hasimaru/Hasimaru3.png
+     *     ...
+     *
+     * La numeración debe ser consecutiva empezando en 1.
+     */
+
+    /*
+     * Imágenes individuales que no pertenecen al sistema
+     * carpeta + nombre + número.
+     *
+     * Se mantienen para no perder las imágenes especiales
+     * que ya existían en la galería.
+     */
     const staticGalleryImages = [
-      { name: 'Kasai 1', url: 'images/Kasai1.png' },
-      { name: 'Kasai 2', url: 'images/Kasai2.png' },
-      { name: 'Nite 1', url: 'images/Nite1.png' },
-      { name: 'Nite 2', url: 'images/Nite2.png' },
-      { name: 'Takasi 1', url: 'images/Takasi1.png' },
-      { name: 'Takasi 2', url: 'images/Takasi2.png' },
-      { name: 'Ukio 1', url: 'images/Ukio1.png' },
-      { name: 'Ukio 2', url: 'images/Ukio2.png' },
       { name: 'Master', url: 'images/Master.png' },
       { name: 'Haikus Bono', url: 'images/Bonos/Haikus.png' },
       { name: 'Termas', url: 'images/Bonos/termas.png' },
       { name: 'Santuario Kitsune', url: 'images/Bonos/santuario Kitsune.png' }
     ];
 
-    function openStaticGalleryModal() {
-      const overlay = document.getElementById('static-gallery-overlay');
+    /*
+     * Comprueba si una imagen existe.
+     */
+    function galleryImageExists(url) {
+      return new Promise(resolve => {
+        const testImage = new Image();
+
+        testImage.onload = () => resolve(true);
+        testImage.onerror = () => resolve(false);
+
+        testImage.src = url;
+      });
+    }
+
+    /*
+     * Busca las imágenes de una carpeta.
+     *
+     * Ejemplo para "Hasimaru":
+     * images/Hasimaru/Hasimaru1.png
+     * images/Hasimaru/Hasimaru2.png
+     * images/Hasimaru/Hasimaru3.png
+     *
+     * Se detiene al encontrar el primer número que no existe.
+     */
+    async function getDynamicGalleryImages(folderName) {
+      const images = [];
+      let number = 1;
+
+      while (true) {
+        const fileName = `${folderName}${number}.png`;
+        const url =
+          `images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
+
+        const exists = await galleryImageExists(url);
+
+        if (!exists) {
+          break;
+        }
+
+        images.push({
+          name: `${folderName}${number}`,
+          url: url
+        });
+
+        number++;
+      }
+
+      return images;
+    }
+
+    /*
+     * Muestra el selector de carpeta.
+     */
+    function renderGalleryFolderSelector() {
       const grid = document.getElementById('static-gallery-grid-items');
-      if (!overlay || !grid) return;
+      if (!grid) return;
+
+      grid.innerHTML = `
+        <div class="static-gallery-folder-selector">
+
+          <div style="
+            color:#c5a059;
+            font-size:13px;
+            font-weight:bold;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            text-align:center;
+          ">
+            Seleccionar carpeta
+          </div>
+
+          <input
+            id="static-gallery-folder-input"
+            class="static-gallery-folder-input"
+            type="text"
+            placeholder="Ejemplo: Hasimaru"
+            autocomplete="off"
+            spellcheck="false"
+          >
+
+          <button
+            class="init-btn static-gallery-folder-button"
+            id="static-gallery-load-folder-button"
+            type="button"
+          >
+            📁 Cargar galería
+          </button>
+
+          <div class="static-gallery-folder-help">
+            Escribe el nombre exacto de la carpeta.<br>
+            Ejemplo: <strong>Hasimaru</strong> →
+            images/Hasimaru/Hasimaru1.png, Hasimaru2.png...
+          </div>
+
+          <div style="
+            border-top:1px solid rgba(197,160,89,0.25);
+            margin-top:8px;
+            padding-top:10px;
+          ">
+            <button
+              class="init-btn"
+              style="width:100%;"
+              id="static-gallery-special-images-button"
+              type="button"
+            >
+              ⭐ Imágenes especiales
+            </button>
+          </div>
+
+        </div>
+      `;
+
+      const input = document.getElementById('static-gallery-folder-input');
+      const button = document.getElementById('static-gallery-load-folder-button');
+      const specialButton = document.getElementById('static-gallery-special-images-button');
+
+      const loadFolder = () => {
+        const folderName = input ? input.value.trim() : '';
+
+        if (!folderName) {
+          input.focus();
+          return;
+        }
+
+        loadDynamicGalleryFolder(folderName);
+      };
+
+      button.addEventListener('click', loadFolder);
+
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          loadFolder();
+        }
+      });
+
+      specialButton.addEventListener('click', () => {
+        renderGalleryImages(
+          staticGalleryImages,
+          'Imágenes especiales',
+          true
+        );
+      });
+
+      setTimeout(() => input.focus(), 50);
+    }
+
+    /*
+     * Carga y muestra las imágenes de la carpeta indicada.
+     */
+    async function loadDynamicGalleryFolder(folderName) {
+      const grid = document.getElementById('static-gallery-grid-items');
+      if (!grid) return;
+
+      grid.innerHTML = `
+        <div class="static-gallery-status" style="grid-column:1 / -1;">
+          Buscando imágenes en <strong>${escapeGalleryHtml(folderName)}</strong>...
+        </div>
+      `;
+
+      const images = await getDynamicGalleryImages(folderName);
+
+      if (images.length === 0) {
+        grid.innerHTML = `
+          <div style="
+            grid-column:1 / -1;
+            text-align:center;
+            color:#aaa;
+            padding:20px;
+          ">
+            <div style="color:#c5a059; font-weight:bold; margin-bottom:8px;">
+              No se han encontrado imágenes
+            </div>
+
+            <div style="font-size:11px; line-height:1.5;">
+              Carpeta:
+              <strong>${escapeGalleryHtml(folderName)}</strong><br><br>
+
+              Se esperaba encontrar archivos como:<br>
+              <span style="color:#c5a059;">
+                images/${escapeGalleryHtml(folderName)}/${escapeGalleryHtml(folderName)}1.png
+              </span>
+            </div>
+
+            <button
+              class="init-btn"
+              style="margin-top:15px;"
+              type="button"
+              onclick="renderGalleryFolderSelector()"
+            >
+              ← Volver
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      renderGalleryImages(images, folderName, true);
+    }
+
+    /*
+     * Renderiza las imágenes de una galería.
+     */
+    function renderGalleryImages(images, title, showBackButton = false) {
+      const grid = document.getElementById('static-gallery-grid-items');
+      if (!grid) return;
 
       grid.innerHTML = '';
-      staticGalleryImages.forEach(img => {
+
+      const header = document.createElement('div');
+      header.style.cssText =
+        'grid-column:1 / -1; display:flex; align-items:center; gap:10px; margin-bottom:2px;';
+
+      if (showBackButton) {
+        const backButton = document.createElement('button');
+        backButton.className = 'init-btn static-gallery-back-button';
+        backButton.type = 'button';
+        backButton.textContent = '← Carpetas';
+
+        backButton.addEventListener('click', () => {
+          renderGalleryFolderSelector();
+        });
+
+        header.appendChild(backButton);
+      }
+
+      const titleElement = document.createElement('div');
+      titleElement.style.cssText =
+        'color:#c5a059; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:1px; flex:1; text-align:center;';
+      titleElement.textContent = title;
+
+      header.appendChild(titleElement);
+      grid.appendChild(header);
+
+      images.forEach(img => {
         const item = document.createElement('div');
         item.className = 'static-gallery-item';
+
         item.innerHTML = `
           <img src="${img.url}" onerror="this.src='images/icono.png';">
-          <span>${img.name}</span>
+          <span>${escapeGalleryHtml(img.name)}</span>
         `;
+
         item.addEventListener('click', () => {
           if (typeof window.saveSharedImage === 'function') {
             window.saveSharedImage(img.url);
           }
+
           closeStaticGalleryModal();
         });
+
         grid.appendChild(item);
       });
+    }
+
+    /*
+     * Evita introducir texto del usuario directamente como HTML.
+     */
+    function escapeGalleryHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /*
+     * Abre la galería mostrando primero el selector de carpetas.
+     */
+    function openStaticGalleryModal() {
+      const overlay = document.getElementById('static-gallery-overlay');
+      const grid = document.getElementById('static-gallery-grid-items');
+
+      if (!overlay || !grid) return;
 
       overlay.style.display = 'flex';
+
+      renderGalleryFolderSelector();
     }
 
     function closeStaticGalleryModal() {
@@ -1776,6 +2104,7 @@
       const layer = document.getElementById('map-tokens-layer');
       if (!layer) return;
       layer.innerHTML = '';
+
       if (!window.mapTokensState) return;
 
       Object.keys(window.mapTokensState).forEach(id => {
