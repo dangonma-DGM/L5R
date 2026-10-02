@@ -265,6 +265,37 @@
       color: #55ff55;
     }
 
+    .initiative-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: 5px;
+      width: 70px;
+    }
+
+    .initiative-fields label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3px;
+      color: #c5a059;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    .initiative-field {
+      width: 43px;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 2px 3px;
+      border: 1px solid rgba(197, 160, 89, 0.65);
+      border-radius: 3px;
+      background: rgba(10, 10, 10, 0.9);
+      color: #fff;
+      font-size: 10px;
+      text-align: center;
+    }
+
     .init-btn {
       background: rgba(40, 40, 40, 0.8);
       border: 1px solid rgba(197, 160, 89, 0.4);
@@ -323,6 +354,36 @@
       object-fit: cover;
       background-color: #000;
       object-position: center top;
+    }
+
+    .map-token-wrapper {
+      position: absolute;
+      width: 100px;
+      min-height: 92px;
+      z-index: 3;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .map-token-wrapper .map-token {
+      position: relative;
+      left: 26px !important;
+      top: 0 !important;
+      display: block;
+    }
+
+    .map-token-name {
+      width: 100px;
+      margin-top: 3px;
+      color: #e0d8c3;
+      font-size: 10px;
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 3px #000, 0 0 4px #000;
+      cursor: grab;
     }
 
     .map-token:active {
@@ -425,59 +486,6 @@
       text-transform: uppercase;
       font-weight: bold;
     }
-
-    /* --- SELECTOR DINÁMICO DE CARPETAS DE GALERÍA --- */
-    .static-gallery-folder-selector {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .static-gallery-folder-input {
-      width: 100%;
-      box-sizing: border-box;
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid rgba(197, 160, 89, 0.6);
-      border-radius: 5px;
-      color: #e0d8c3;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .static-gallery-folder-input:focus {
-      border-color: #c5a059;
-      box-shadow: 0 0 8px rgba(197, 160, 89, 0.2);
-    }
-
-    .static-gallery-folder-button {
-      width: 100%;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    .static-gallery-folder-help {
-      color: #999;
-      font-size: 10px;
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    .static-gallery-back-button {
-      align-self: flex-start;
-      margin-bottom: 5px;
-    }
-
-    .static-gallery-status {
-      color: #c5a059;
-      text-align: center;
-      padding: 10px;
-      font-size: 12px;
-    }
-
 
     /* --- LANZADORES DE DADOS EN MESA --- */
     .players-grid {
@@ -1441,7 +1449,22 @@
         card.innerHTML = `
           <img src="${item.img}" class="init-avatar" onerror="this.src='images/icono.png';">
           <span class="init-name">${item.name}</span>
+          <div class="initiative-fields">
+            <label>INIT <input class="initiative-field" type="text" data-field="init" value="${item.init || ''}" aria-label="Iniciativa de ${item.name}"></label>
+            <label>DAÑO <input class="initiative-field" type="text" data-field="damage" value="${item.damage || ''}" aria-label="Daño de ${item.name}"></label>
+          </div>
         `;
+
+        card.querySelectorAll('.initiative-field').forEach(input => {
+          input.addEventListener('mousedown', e => e.stopPropagation());
+          input.addEventListener('click', e => e.stopPropagation());
+          input.addEventListener('change', () => {
+            item[input.dataset.field] = input.value;
+            if (typeof window.saveInitiativeState === 'function') {
+              window.saveInitiativeState(window.initiativeState);
+            }
+          });
+        });
 
         card.addEventListener('dragstart', (e) => {
           draggedItemIndex = index;
@@ -1589,11 +1612,11 @@
 
     function getDefaultTokens() {
       return {
-        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai' },
-        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
-        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
-        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
-        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
+        'kasai': { x: 50, y: 50, img: 'images/Kasai1.png', name: 'Kasai', init: '', damage: '' },
+        'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite', init: '', damage: '' },
+        'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi', init: '', damage: '' },
+        'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio', init: '', damage: '' },
+        'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true, init: '', damage: '' }
       };
     }
     window.getDefaultTokens = getDefaultTokens;
@@ -1699,319 +1722,44 @@
     }
 
     /* --- LÓGICA DE LA GALERÍA ESTÁTICA MODAL --- */
-
-    /*
-     * GALERÍA DINÁMICA POR CARPETA
-     *
-     * No es necesario declarar las carpetas aquí.
-     *
-     * El usuario escribe el nombre de la carpeta en el buscador.
-     *
-     * Si escribimos:
-     *     Hasimaru
-     *
-     * se buscarán automáticamente:
-     *     images/Hasimaru/Hasimaru1.png
-     *     images/Hasimaru/Hasimaru2.png
-     *     images/Hasimaru/Hasimaru3.png
-     *     ...
-     *
-     * La numeración debe ser consecutiva empezando en 1.
-     */
-
-    /*
-     * Imágenes individuales que no pertenecen al sistema
-     * carpeta + nombre + número.
-     *
-     * Se mantienen para no perder las imágenes especiales
-     * que ya existían en la galería.
-     */
     const staticGalleryImages = [
+      { name: 'Kasai 1', url: 'images/Kasai1.png' },
+      { name: 'Kasai 2', url: 'images/Kasai2.png' },
+      { name: 'Nite 1', url: 'images/Nite1.png' },
+      { name: 'Nite 2', url: 'images/Nite2.png' },
+      { name: 'Takasi 1', url: 'images/Takasi1.png' },
+      { name: 'Takasi 2', url: 'images/Takasi2.png' },
+      { name: 'Ukio 1', url: 'images/Ukio1.png' },
+      { name: 'Ukio 2', url: 'images/Ukio2.png' },
       { name: 'Master', url: 'images/Master.png' },
       { name: 'Haikus Bono', url: 'images/Bonos/Haikus.png' },
       { name: 'Termas', url: 'images/Bonos/termas.png' },
       { name: 'Santuario Kitsune', url: 'images/Bonos/santuario Kitsune.png' }
     ];
 
-    /*
-     * Comprueba si una imagen existe.
-     */
-    function galleryImageExists(url) {
-      return new Promise(resolve => {
-        const testImage = new Image();
-
-        testImage.onload = () => resolve(true);
-        testImage.onerror = () => resolve(false);
-
-        testImage.src = url;
-      });
-    }
-
-    /*
-     * Busca las imágenes de una carpeta.
-     *
-     * Ejemplo para "Hasimaru":
-     * images/Hasimaru/Hasimaru1.png
-     * images/Hasimaru/Hasimaru2.png
-     * images/Hasimaru/Hasimaru3.png
-     *
-     * Se detiene al encontrar el primer número que no existe.
-     */
-    async function getDynamicGalleryImages(folderName) {
-      const images = [];
-      let number = 1;
-
-      while (true) {
-        const fileName = `${folderName}${number}.png`;
-        const url =
-          `images/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
-
-        const exists = await galleryImageExists(url);
-
-        if (!exists) {
-          break;
-        }
-
-        images.push({
-          name: `${folderName}${number}`,
-          url: url
-        });
-
-        number++;
-      }
-
-      return images;
-    }
-
-    /*
-     * Muestra el selector de carpeta.
-     */
-    function renderGalleryFolderSelector() {
+    function openStaticGalleryModal() {
+      const overlay = document.getElementById('static-gallery-overlay');
       const grid = document.getElementById('static-gallery-grid-items');
-      if (!grid) return;
-
-      grid.innerHTML = `
-        <div class="static-gallery-folder-selector">
-
-          <div style="
-            color:#c5a059;
-            font-size:13px;
-            font-weight:bold;
-            text-transform:uppercase;
-            letter-spacing:1px;
-            text-align:center;
-          ">
-            Seleccionar carpeta
-          </div>
-
-          <input
-            id="static-gallery-folder-input"
-            class="static-gallery-folder-input"
-            type="text"
-            placeholder="Ejemplo: Hasimaru"
-            autocomplete="off"
-            spellcheck="false"
-          >
-
-          <button
-            class="init-btn static-gallery-folder-button"
-            id="static-gallery-load-folder-button"
-            type="button"
-          >
-            📁 Cargar galería
-          </button>
-
-          <div class="static-gallery-folder-help">
-            Escribe el nombre exacto de la carpeta.<br>
-            Ejemplo: <strong>Hasimaru</strong> →
-            images/Hasimaru/Hasimaru1.png, Hasimaru2.png...
-          </div>
-
-          <div style="
-            border-top:1px solid rgba(197,160,89,0.25);
-            margin-top:8px;
-            padding-top:10px;
-          ">
-            <button
-              class="init-btn"
-              style="width:100%;"
-              id="static-gallery-special-images-button"
-              type="button"
-            >
-              ⭐ Imágenes especiales
-            </button>
-          </div>
-
-        </div>
-      `;
-
-      const input = document.getElementById('static-gallery-folder-input');
-      const button = document.getElementById('static-gallery-load-folder-button');
-      const specialButton = document.getElementById('static-gallery-special-images-button');
-
-      const loadFolder = () => {
-        const folderName = input ? input.value.trim() : '';
-
-        if (!folderName) {
-          input.focus();
-          return;
-        }
-
-        loadDynamicGalleryFolder(folderName);
-      };
-
-      button.addEventListener('click', loadFolder);
-
-      input.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          loadFolder();
-        }
-      });
-
-      specialButton.addEventListener('click', () => {
-        renderGalleryImages(
-          staticGalleryImages,
-          'Imágenes especiales',
-          true
-        );
-      });
-
-      setTimeout(() => input.focus(), 50);
-    }
-
-    /*
-     * Carga y muestra las imágenes de la carpeta indicada.
-     */
-    async function loadDynamicGalleryFolder(folderName) {
-      const grid = document.getElementById('static-gallery-grid-items');
-      if (!grid) return;
-
-      grid.innerHTML = `
-        <div class="static-gallery-status" style="grid-column:1 / -1;">
-          Buscando imágenes en <strong>${escapeGalleryHtml(folderName)}</strong>...
-        </div>
-      `;
-
-      const images = await getDynamicGalleryImages(folderName);
-
-      if (images.length === 0) {
-        grid.innerHTML = `
-          <div style="
-            grid-column:1 / -1;
-            text-align:center;
-            color:#aaa;
-            padding:20px;
-          ">
-            <div style="color:#c5a059; font-weight:bold; margin-bottom:8px;">
-              No se han encontrado imágenes
-            </div>
-
-            <div style="font-size:11px; line-height:1.5;">
-              Carpeta:
-              <strong>${escapeGalleryHtml(folderName)}</strong><br><br>
-
-              Se esperaba encontrar archivos como:<br>
-              <span style="color:#c5a059;">
-                images/${escapeGalleryHtml(folderName)}/${escapeGalleryHtml(folderName)}1.png
-              </span>
-            </div>
-
-            <button
-              class="init-btn"
-              style="margin-top:15px;"
-              type="button"
-              onclick="renderGalleryFolderSelector()"
-            >
-              ← Volver
-            </button>
-          </div>
-        `;
-        return;
-      }
-
-      renderGalleryImages(images, folderName, true);
-    }
-
-    /*
-     * Renderiza las imágenes de una galería.
-     */
-    function renderGalleryImages(images, title, showBackButton = false) {
-      const grid = document.getElementById('static-gallery-grid-items');
-      if (!grid) return;
+      if (!overlay || !grid) return;
 
       grid.innerHTML = '';
-
-      const header = document.createElement('div');
-      header.style.cssText =
-        'grid-column:1 / -1; display:flex; align-items:center; gap:10px; margin-bottom:2px;';
-
-      if (showBackButton) {
-        const backButton = document.createElement('button');
-        backButton.className = 'init-btn static-gallery-back-button';
-        backButton.type = 'button';
-        backButton.textContent = '← Carpetas';
-
-        backButton.addEventListener('click', () => {
-          renderGalleryFolderSelector();
-        });
-
-        header.appendChild(backButton);
-      }
-
-      const titleElement = document.createElement('div');
-      titleElement.style.cssText =
-        'color:#c5a059; font-size:12px; font-weight:bold; text-transform:uppercase; letter-spacing:1px; flex:1; text-align:center;';
-      titleElement.textContent = title;
-
-      header.appendChild(titleElement);
-      grid.appendChild(header);
-
-      images.forEach(img => {
+      staticGalleryImages.forEach(img => {
         const item = document.createElement('div');
         item.className = 'static-gallery-item';
-
         item.innerHTML = `
           <img src="${img.url}" onerror="this.src='images/icono.png';">
-          <span>${escapeGalleryHtml(img.name)}</span>
+          <span>${img.name}</span>
         `;
-
         item.addEventListener('click', () => {
           if (typeof window.saveSharedImage === 'function') {
             window.saveSharedImage(img.url);
           }
-
           closeStaticGalleryModal();
         });
-
         grid.appendChild(item);
       });
-    }
-
-    /*
-     * Evita introducir texto del usuario directamente como HTML.
-     */
-    function escapeGalleryHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    /*
-     * Abre la galería mostrando primero el selector de carpetas.
-     */
-    function openStaticGalleryModal() {
-      const overlay = document.getElementById('static-gallery-overlay');
-      const grid = document.getElementById('static-gallery-grid-items');
-
-      if (!overlay || !grid) return;
 
       overlay.style.display = 'flex';
-
-      renderGalleryFolderSelector();
     }
 
     function closeStaticGalleryModal() {
@@ -2028,49 +1776,63 @@
       const layer = document.getElementById('map-tokens-layer');
       if (!layer) return;
       layer.innerHTML = '';
-
       if (!window.mapTokensState) return;
 
       Object.keys(window.mapTokensState).forEach(id => {
         const tokenData = window.mapTokensState[id];
         if (!tokenData) return;
-        
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'map-token-wrapper';
+        wrapper.style.left = `${tokenData.x}px`;
+        wrapper.style.top = `${tokenData.y}px`;
+        wrapper.title = 'Arrastra para mover el token';
+
         const el = document.createElement('img');
         el.src = tokenData.img;
         el.className = `map-token ${tokenData.isMaster ? 'master-token' : ''}`;
-        el.style.left = `${tokenData.x}px`;
-        el.style.top = `${tokenData.y}px`;
         el.title = tokenData.name;
         el.onerror = function() { this.src = 'images/icono.png'; };
+
+        const name = document.createElement('div');
+        name.className = 'map-token-name';
+        name.textContent = tokenData.name;
+
+        wrapper.appendChild(el);
+        wrapper.appendChild(name);
 
         let isDraggingToken = false;
         let startX, startY;
 
-        el.addEventListener('mousedown', (e) => {
+        wrapper.addEventListener('mousedown', (e) => {
           isDraggingToken = true;
           startX = e.clientX - tokenData.x;
           startY = e.clientY - tokenData.y;
+          wrapper.style.zIndex = '10';
+          e.preventDefault();
           e.stopPropagation();
         });
 
-        window.addEventListener('mousemove', (e) => {
+        const moveToken = (e) => {
           if (!isDraggingToken) return;
           tokenData.x = e.clientX - startX;
           tokenData.y = e.clientY - startY;
-          el.style.left = `${tokenData.x}px`;
-          el.style.top = `${tokenData.y}px`;
-        });
+          wrapper.style.left = `${tokenData.x}px`;
+          wrapper.style.top = `${tokenData.y}px`;
+        };
 
-        window.addEventListener('mouseup', () => {
-          if (isDraggingToken) {
-            isDraggingToken = false;
-            if (window.saveMapTokens) {
-              window.saveMapTokens(window.mapTokensState);
-            }
+        const stopToken = () => {
+          if (!isDraggingToken) return;
+          isDraggingToken = false;
+          wrapper.style.zIndex = '3';
+          if (typeof window.saveMapTokens === 'function') {
+            window.saveMapTokens(window.mapTokensState);
           }
-        });
+        };
 
-        layer.appendChild(el);
+        window.addEventListener('mousemove', moveToken);
+        window.addEventListener('mouseup', stopToken);
+        layer.appendChild(wrapper);
       });
     }
 
