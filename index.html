@@ -1109,6 +1109,7 @@
       <button class="nav-btn" onclick="switchTab('char-nite')">Nite</button>
       <button class="nav-btn" onclick="switchTab('char-takasi')">Takasi</button>
       <button class="nav-btn" onclick="switchTab('char-ukio')">Ukio</button>
+      <button class="nav-btn" onclick="switchTab('char-renzo')">Renzo</button>
 
       <div class="nav-group-title">Herramientas</div>
       <button class="nav-btn" onclick="switchTab('bonos')">Bonos</button>
@@ -1230,6 +1231,10 @@
 
     <section id="page-char-ukio" class="page-section">
       <div class="character-container" id="char-block-ukio"></div>
+    </section>
+
+    <section id="page-char-renzo" class="page-section">
+      <div class="character-container" id="char-block-renzo"></div>
     </section>
 
     <!-- BONOS -->
@@ -1465,7 +1470,8 @@
       { id: 'kasai', name: 'Kasai', img1: 'images/Kasai1.png', img2: 'images/Kasai2.png' },
       { id: 'nite', name: 'Nite', img1: 'images/Nite1.png', img2: 'images/Nite2.png' },
       { id: 'takasi', name: 'Takasi', img1: 'images/Takasi1.png', img2: 'images/Takasi2.png' },
-      { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' }
+      { id: 'ukio', name: 'Ukio', img1: 'images/Ukio1.png', img2: 'images/Ukio2.png' },
+      { id: 'renzo', name: 'Renzo', img1: 'images/Renzo1.png', img2: 'images/Renzo2.png' }
     ];
 
     window.characterSheetsData = {};
@@ -1478,7 +1484,8 @@
         { id: 'nite', name: 'Nite', img: 'images/Nite1.png', isMaster: false },
         { id: 'master_1', name: 'Master A', img: 'images/Master.png', isMaster: true },
         { id: 'takasi', name: 'Takasi', img: 'images/Takasi1.png', isMaster: false },
-        { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false }
+        { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false },
+        { id: 'renzo', name: 'Renzo', img: 'images/Renzo1.png', isMaster: false }
       ]
     };
 
@@ -1634,7 +1641,8 @@
           { id: 'nite', name: 'Nite', img: 'images/Nite1.png', isMaster: false },
           { id: 'master_1', name: 'Master A', img: 'images/Master.png', isMaster: true },
           { id: 'takasi', name: 'Takasi', img: 'images/Takasi1.png', isMaster: false },
-          { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false }
+          { id: 'ukio', name: 'Ukio', img: 'images/Ukio1.png', isMaster: false },
+        { id: 'renzo', name: 'Renzo', img: 'images/Renzo1.png', isMaster: false }
         ]
       };
 
@@ -1669,6 +1677,7 @@
         'nite': { x: 110, y: 50, img: 'images/Nite1.png', name: 'Nite' },
         'takasi': { x: 170, y: 50, img: 'images/Takasi1.png', name: 'Takasi' },
         'ukio': { x: 230, y: 50, img: 'images/Ukio1.png', name: 'Ukio' },
+        'renzo': { x: 350, y: 50, img: 'images/Renzo1.png', name: 'Renzo' },
         'master_1': { x: 290, y: 50, img: 'images/Master.png', name: 'Master A', isMaster: true }
       };
     }
@@ -2452,6 +2461,15 @@
       });
     }
 
+    function renderRenzoSheetHTML() {
+      const html = renderFullSheetHTML('renzo');
+      const start = html.indexOf(`<div>
+            <div style="color:#c5a059; font-size:12px; font-weight:bold; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid rgba(197, 160, 89, 0.3); padding-bottom:4px;">
+              Anillos y Trazos`);
+      const end = html.indexOf(`<div style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 6px; padding: 12px;">`, start);
+      return start !== -1 && end !== -1 ? html.slice(0, start) + html.slice(end) : html;
+    }
+
     function initCharacters() {
       charactersData.filter(char => !char.isMaster).forEach(char => {
         const container = document.getElementById(`char-block-${char.id}`);
@@ -2459,7 +2477,7 @@
 
         container.innerHTML = `
           <h2 class="char-title">${char.name}</h2>
-          ${renderFullSheetHTML(char.id)}
+          ${char.id === 'renzo' ? renderRenzoSheetHTML() : renderFullSheetHTML(char.id)}
           <div class="char-gallery" style="margin-top:10px;">
             <div class="char-img-wrapper"><img src="${char.img1}" onerror="this.src='images/icono.png';"></div>
             <div class="char-img-wrapper"><img src="${char.img2}" onerror="this.src='images/icono.png';"></div>
