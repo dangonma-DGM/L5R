@@ -1156,6 +1156,21 @@
     @keyframes duelPop{0%{transform:scale(2.4);opacity:0}100%{transform:scale(1);opacity:1}}
     @keyframes duelPulse{0%,100%{box-shadow:0 0 8px #c5a05944}50%{box-shadow:0 0 26px #e0bd62aa}}
     @media(max-width:850px){.duel-arena{grid-template-columns:1fr}.duel-hub{padding-top:0;flex-direction:row;justify-content:center;flex-wrap:wrap}.duel-config{grid-template-columns:1fr}}
+    .duel-adjust{display:flex;align-items:center;gap:8px;font-size:12px;color:#aaa;margin:4px 0 8px}.duel-adjust b{color:#ffe39a;min-width:16px;text-align:center}.duel-adjust .init-btn{padding:2px 9px}
+    /* Botonera de sonidos */
+    #soundboard{width:100%;max-width:1250px;margin:10px auto 0;background:rgba(15,15,15,.95);border:1px solid rgba(197,160,89,.4);border-radius:8px;padding:14px}
+    .sb-head{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:12px}
+    .sb-head h2{margin:0;font-size:16px;color:#c5a059;letter-spacing:2px;text-transform:uppercase;flex:1;min-width:180px}
+    .sb-toggle{background:#1a1a1a;color:#ddd;border:1px solid #76613d;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:bold}
+    .sb-toggle.on{background:#3a2f12;color:#ffe39a;border-color:#e0bd62}
+    .sb-vol{color:#aaa;font-size:12px;display:flex;align-items:center;gap:6px}
+    .sb-grid{display:flex;flex-wrap:wrap;gap:10px}
+    .sb-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1f1a12,#141414);color:#f0dca0;border:1px solid #79643d;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:14px;transition:transform .1s,box-shadow .2s}
+    .sb-btn span{font-size:20px}
+    .sb-btn:hover{box-shadow:0 0 14px #c5a05966}.sb-btn:active{transform:scale(.95)}
+    .sb-note{min-height:22px;margin-top:10px;color:#ffe39a;font-weight:bold;text-align:center;opacity:0}
+    .sb-note.flash{animation:sbFlash 2.2s ease both}
+    @keyframes sbFlash{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1.1)}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
   </style>
 </head>
 <body>
@@ -1197,6 +1212,9 @@
       
       <!-- Cuadrícula de jugadores y dados -->
       <div class="players-grid" id="main-dice-grid"></div>
+
+      <!-- Botonera de sonidos compartida -->
+      <div id="soundboard"></div>
 
       <!-- --- MAPA TÁCTICO Y BOTONERA (Escritorio) --- -->
       <div class="desktop-tactical-map-section" style="width: 100%; max-width: 1400px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; border-top: 2px solid rgba(197, 160, 89, 0.4); padding-top: 25px;">
@@ -1399,7 +1417,7 @@
     window.saveDuelistNpcs = function(data) { set(ref(db, 'iajustsuDuel/npcs'), data); };
     onValue(ref(db, 'iajustsuDuel/state'), (snapshot) => {
       const data = snapshot.val();
-      if (data) { window.duelState = data; if (window.renderDuelApp) window.renderDuelApp(); }
+      if (data && !window.duelBusy) { window.duelState = data; if (window.renderDuelApp) window.renderDuelApp(); }
     });
     onValue(ref(db, 'iajustsuDuel/npcs'), (snapshot) => {
       const data = snapshot.val();
@@ -1408,6 +1426,39 @@
       if (window.renderDuelistNpcApp) window.renderDuelistNpcApp();
       if (window.renderDuelApp) window.renderDuelApp();
     });
+
+    /* ===== BOTONERA DE SONIDOS COMPARTIDA ===== */
+    // Edita aquí los nombres de archivo si los tuyos son distintos (carpeta sounds/ junto al HTML)
+    const SOUND_LIST=[
+      {id:'siuu',label:'Siuuu',icon:'⚽',file:'sounds/Siuu.mp3'},
+      {id:'maravillosa',label:'Maravillosa jugada',icon:'👏',file:'sounds/Maravillosa.mp3'},
+      {id:'fatality',label:'Fatality',icon:'💀',file:'sounds/Fatality.mp3'},
+      {id:'ohno',label:'Oh noooo',icon:'🐵',file:'sounds/Oh No.mp3'},
+      {id:'expediente',label:'Expediente X',icon:'👽',file:'sounds/ExpedienteX.mp3'}
+    ];
+    let sbOn=false, sbVol=0.8, sbCool=0, sbCur=null, sbSeen=null, sbFirst=true;
+    try{ sbVol=parseFloat(localStorage.getItem('sbVol'))||0.8; sbOn=localStorage.getItem('sbOn')==='1'; }catch(e){}
+    const sbAudio={};
+    const sbGet=s=>sbAudio[s.id]||(sbAudio[s.id]=Object.assign(new Audio(encodeURI(s.file)),{preload:'auto'}));
+    function renderSoundboard(){
+      const box=document.getElementById('soundboard'); if(!box)return;
+      box.innerHTML=`<div class="sb-head"><h2>🔊 Botonera de sonidos</h2><button class="sb-toggle ${sbOn?'on':''}" onclick="toggleSound()">${sbOn?'🔊 Sonido activado':'🔇 Activar sonido'}</button><label class="sb-vol">Volumen <input type="range" min="0" max="1" step="0.05" value="${sbVol}" oninput="setSoundVol(this.value)"></label></div><div class="sb-grid">${SOUND_LIST.map(s=>`<button class="sb-btn" onclick="sendSound('${s.id}')"><span>${s.icon}</span>${s.label}</button>`).join('')}</div><div class="sb-note" id="sb-note"></div>`;
+    }
+    function sbUnlock(){ SOUND_LIST.forEach(s=>{const a=sbGet(s); a.muted=true; a.play().then(()=>{a.pause();a.currentTime=0;a.muted=false;}).catch(()=>{a.muted=false;});}); }
+    window.toggleSound=function(){ sbOn=!sbOn; try{localStorage.setItem('sbOn',sbOn?'1':'0');}catch(e){} if(sbOn) sbUnlock(); else if(sbCur) sbCur.pause(); renderSoundboard(); };
+    window.setSoundVol=function(v){ sbVol=Math.min(1,Math.max(0,parseFloat(v)||0)); try{localStorage.setItem('sbVol',sbVol);}catch(e){} };
+    window.sendSound=function(id){ if(Date.now()<sbCool)return; sbCool=Date.now()+1500; window.sendSoundEvent({id:'e'+Date.now()+Math.random().toString(36).slice(2,6),sound:id,ts:Date.now()}); };
+    window.playSoundEvent=function(ev){
+      if(!ev||ev.id===sbSeen)return; sbSeen=ev.id;
+      const s=SOUND_LIST.find(x=>x.id===ev.sound); if(!s)return;
+      const n=document.getElementById('sb-note'); if(n){n.textContent=`${s.icon} ${s.label}`;n.classList.remove('flash');void n.offsetWidth;n.classList.add('flash');}
+      if(!sbOn)return;
+      if(sbCur)sbCur.pause();
+      const a=sbGet(s); a.volume=sbVol; a.currentTime=0; a.play().catch(()=>{}); sbCur=a;
+    };
+    window.sendSoundEvent=ev=>set(ref(db,'soundboard/last'),ev);
+    onValue(ref(db,'soundboard/last'),snap=>{ const d=snap.val(); if(sbFirst){sbFirst=false; sbSeen=d?.id||null; return;} if(d)window.playSoundEvent(d); });
+    renderSoundboard();
 
     window.saveInitiativeState = function(state) {
       set(ref(db, 'initiative'), state);
@@ -2590,6 +2641,19 @@
       });
     }
 
+    function showRollLocal(charId, data) {
+      const totalEl = document.getElementById(`total-${charId}`);
+      if (totalEl) totalEl.innerText = data.totalSum;
+      const box = document.getElementById(`history-${charId}`);
+      if (!box) return;
+      if (box.innerHTML.includes('Sin tiradas')) box.innerHTML = '';
+      const e = document.createElement('div');
+      e.className = 'history-entry';
+      const modSign = data.modVal ? (data.modVal > 0 ? `+${data.modVal}` : `${data.modVal}`) : '';
+      e.innerHTML = `<strong>[${data.type} 🔒 privada] ${data.numRoll}g${data.numKeep}${modSign}:</strong> Total <span style="color:#55ff55;">${data.totalSum}</span><br><span style="font-size:9px;">Dados: ${data.diceDetailsStr} ${data.modVal ? `(Mod: ${modSign})` : ''}</span>`;
+      box.prepend(e);
+    }
+
     function rollL5RDice(charId) {
       const rollNumInput = document.getElementById(`roll-num-${charId}`);
       const keepNumInput = document.getElementById(`keep-num-${charId}`);
@@ -2638,8 +2702,7 @@
         return isKept ? `<span class="kept-dice">${rollText}</span>` : `<span style="opacity:0.4">${rollText}</span>`;
       }).join(', ');
 
-      if (typeof window.saveRollToFirebase === 'function') {
-        window.saveRollToFirebase(charId, {
+      const rollPayload = {
           type: rollType,
           numRoll,
           numKeep,
@@ -2647,7 +2710,11 @@
           totalSum,
           diceDetailsStr,
           timestamp: Date.now()
-        });
+      };
+      if (charId === 'master' && rollType === 'Daño') {
+        showRollLocal(charId, rollPayload); // privada: no se sincroniza con el resto
+      } else if (typeof window.saveRollToFirebase === 'function') {
+        window.saveRollToFirebase(charId, rollPayload);
       }
     }
 
@@ -2760,6 +2827,9 @@
     ];
     function duelEsc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function duelNum(v, fallback=0){ const n=Number(v); return Number.isFinite(n)?n:fallback; }
+    // Imágenes de duelistas: images/duelistas/<Nombre>.png (si no existe, usa la imagen propia del PJ/PNJ y por último el icono)
+    function duelImgAttrs(d,fallback){ const main='images/duelistas/'+encodeURIComponent(d?.name||'')+'.png'; return `src="${duelEsc(main)}" data-fb="${duelEsc(fallback||'')}" onerror="duelImgErr(this)"`; }
+    window.duelImgErr=function(el){ const fb=(el.dataset.fb||'').split('|').filter(Boolean); if(fb.length){ const nx=fb.shift(); el.dataset.fb=fb.join('|'); el.src=nx; } else { el.onerror=null; el.src='images/icono.png'; } };
     function getDuelist(id){
       if (!id) return null;
       if (id.startsWith('npc:')) return (window.duelistNpcs || []).find(n=>n && n.id===id.slice(4)) || null;
@@ -2782,6 +2852,10 @@
     }
     function poolFor(d, trait, skill){ const t=Math.max(0,duelNum(d?.[trait])); const k=Math.max(0,duelNum(d?.iajustsu)); return {roll:t+k,keep:t}; }
     function showDuelRoll(side,kind){
+      window.duelBusy=true;
+      try{ showDuelRollInner(side,kind); } finally { window.duelBusy=false; renderDuelApp(); }
+    }
+    function showDuelRollInner(side,kind){
       const st=window.duelState, id=side==='left'?st.leftId:st.rightId, d=getDuelist(id); if(!d){alert('Selecciona primero a ambos duelistas.');return;}
       if(kind==='recognition'&&st.phase!=='setup')return;
       if(kind==='concentration'&&(st.phase!=='concentration'||st.turn!==side||st.lastConcentrator===side)){renderDuelApp();return;}
@@ -2820,9 +2894,7 @@
         if(result.success){
           st[side].successes=duelNum(st[side].successes)+1; st.currentNO=duelNum(st.currentNO,5)+5; st.left.lastSuccessfulNO=st.currentNO; st.right.lastSuccessfulNO=st.currentNO;
           duelLog(`${d.name} supera concentración: ${result.total} contra NO ${target}. NO para impactar aumenta a ${st.currentNO}.`);
-          if(duelNum(st[side].attempts)>=maxAllowed){st.phase='attack';st.failedSide=side;st.turn=opponentSide;duelLog(`${d.name} se queda sin concentraciones disponibles. ${opponentName} debe atacar.`);}
-          else if(duelNum(st[opponentSide].attempts)>0&&duelNum(st[opponentSide].attempts)>=duelMax(opponentSide)){st.phase='attack';st.failedSide=opponentSide;st.turn=side;duelLog(`${opponentName} no tiene concentraciones disponibles. ${d.name} debe atacar.`);}
-          else st.turn=opponentSide;
+          st.turn=opponentSide; // si el rival está agotado, la pantalla le ofrece gastar Vacío o terminar
         } else {st.phase='attack';st.failedSide=side;st.turn=opponentSide;duelLog(`${d.name} falla concentración. ${opponentName} debe atacar contra el último NO exitoso (${target}); obtiene aumentos gratuitos según sus concentraciones exitosas.`);}
       } else if(kind==='attack'){
         const victimSide=side==='left'?'right':'left'; result.target=duelNum(st[victimSide].lastSuccessfulNO,5); result.success=result.total>=result.target;
@@ -2869,6 +2941,22 @@
     function duelName(s){ return getDuelist(duelSideId(s))?.name||(s==='left'?'Izquierdo':'Derecho'); }
     function duelMax(side){ const ss=window.duelState[side]||{}, d=getDuelist(duelSideId(side)); return Math.max(0,duelNum(ss.maxConcentrations)||duelNum(d?.[ss.choice])); }
     window.duelMax=duelMax;
+    function duelVoidLeft(side){ const d=getDuelist(duelSideId(side)); if(!d)return 0; if(!String(duelSideId(side)).startsWith('npc:')) return duelNum(d.voidRemaining); return Math.max(0,duelNum(d.vacio)-duelNum(window.duelState[side]?.voidSpent)); }
+    window.spendDuelVoid=function(side){
+      const st=window.duelState, ss=st[side], id=duelSideId(side), d=getDuelist(id); if(!d||duelVoidLeft(side)<=0)return;
+      ss.voidSpent=duelNum(ss.voidSpent)+1; ss.maxConcentrations=duelMax(side)+1;
+      if(!String(id).startsWith('npc:')){ const sh=(window.characterSheetsData[id]=window.characterSheetsData[id]||{}); const n=duelNum(sh.vacio_gastado)+1; sh.vacio_gastado=n; if(window.saveField)window.saveField(id,'vacio_gastado',n); }
+      duelLog(`${d.name} gasta 1 punto de Vacío: +1 concentración (máximo ${ss.maxConcentrations}).`); renderDuelApp();
+    };
+    window.endDuelConcentration=function(side){
+      const st=window.duelState, o=side==='left'?'right':'left';
+      st.phase='attack'; st.failedSide=side; st.turn=o;
+      duelLog(`${duelName(side)} no puede concentrarse más. ${duelName(o)} debe atacar.`); renderDuelApp();
+    };
+    window.adjustDuelConcentrations=function(side,delta){
+      const st=window.duelState, ss=st[side]; ss.maxConcentrations=Math.max(0,duelMax(side)+delta);
+      duelLog(`Se ajustan las concentraciones de ${duelName(side)}: ${delta>0?'+':''}${delta} (máximo ${ss.maxConcentrations}).`); renderDuelApp();
+    };
     window.startDuelConcentration=function(){ const st=window.duelState; const first=document.getElementById('duel-first')?.value||'left'; st.firstChooser=first; st.phase='concentration'; st.turn=first; st.lastConcentrator=null; duelLog(`Comienza la concentración. Abre ${duelName(first)}.`); renderDuelApp(); };
     window.closeDuel=function(){ window.duelState.phase='terminado'; duelLog('El duelo ha terminado.'); renderDuelApp(); };
     function renderDuelApp(){
@@ -2889,7 +2977,7 @@
         const rows=DUEL_ATTRS.map(([k,label])=>{const shown=(ss.revealed||[]).includes(k);return `<div class="duel-attr"><span>${label}</span><strong>${shown?duelEsc(d[k]??'—'):'••••'}</strong>${rs.recognitionSuccess&&duelNum(rs.recognitionRemaining)>0&&!shown?`<button class="init-btn" onclick="revealDuelAttribute('${side}','${k}','${other(side)}')">Revelar</button>`:''}</div>`}).join('');
         const max=duelMax(side);
         const pips=(ph==='setup')?'':`<div class="duel-pips" title="Concentraciones">${Array.from({length:Math.min(max,12)},(_,i)=>`<i class="${i<duelNum(ss.successes)?'ok':i<duelNum(ss.attempts)?'ko':''}"></i>`).join('')}</div>`;
-        return `<div class="duel-fighter${turnSide===side?' is-turn':''}${turnSide&&turnSide!==side?' is-wait':''}">${sel}<div class="duel-person"><img src="${duelEsc(d.image||'images/icono.png')}" onerror="this.onerror=null;this.src='images/icono.png'"><b>${duelEsc(d.name)}</b></div>${pips}<div class="duel-attrs">${rows}</div></div>`;
+        return `<div class="duel-fighter${turnSide===side?' is-turn':''}${turnSide&&turnSide!==side?' is-wait':''}">${sel}<div class="duel-person"><img ${duelImgAttrs(d,d.image)}><b>${duelEsc(d.name)}</b></div>${pips}${ph==='concentration'?`<div class="duel-adjust" title="Técnicas de escuela u otros efectos"><span>Concentraciones</span><button class="init-btn" onclick="adjustDuelConcentrations('${side}',-1)">−</button><b>${max}</b><button class="init-btn" onclick="adjustDuelConcentrations('${side}',1)">+</button></div>`:''}<div class="duel-attrs">${rows}</div></div>`;
       };
       const rollbox=(side,prefix,pool,mod=0)=>`<details class="duel-dice"><summary>Ajustar dados · ${pool.roll}g${pool.keep}${mod?(mod>0?'+':'')+mod:''}</summary><div class="duel-inputs"><label>Tirar <input id="duel-${side}-${prefix}-roll" type="number" min="1" value="${pool.roll||1}"></label><label>Guardar <input id="duel-${side}-${prefix}-keep" type="number" min="1" value="${pool.keep||1}"></label><label>Mod <input id="duel-${side}-${prefix}-mod" type="number" value="${mod}"></label></div></details>`;
       const resBox=r=>r?`<div class="duel-result${duelFx('r'+r.cinematicId)}"><span class="result-verdict ${r.success?'success':'failure'}">${r.success?'✦ ÉXITO':'✕ FALLO'}</span><br>${duelEsc(r.label)}: <b style="font-size:26px;color:#fff">${r.total}</b> <span style="color:#aaa">contra NO ${r.target}</span><details class="duel-dice"><summary>Dados</summary><small>${duelEsc(r.detail||'')}</small></details></div>`:'';
@@ -2902,88 +2990,10 @@
         stage=`<div class="duel-panels">${card('left')}${card('right')}</div>`+(ready?`<div class="duel-step-card${duelFx('start')}"><h3>Todo listo</h3><label class="duel-label">Abre la concentración<select id="duel-first"><option value="left" ${st.firstChooser!=='right'?'selected':''}>${duelEsc(duelName('left'))}</option><option value="right" ${st.firstChooser==='right'?'selected':''}>${duelEsc(duelName('right'))}</option></select></label><button class="init-btn" onclick="startDuelConcentration()">▶ Comenzar concentración</button></div>`:'');
       } else if(ph==='concentration'){
         const d=dl(A), ss=st[A], first=duelNum(ss.attempts)===0;
-        stage=`<div class="duel-step-card duel-turn${duelFx('t'+A+duelNum(ss.attempts)+st.currentNO)}"><h3>Turno de ${duelEsc(duelName(A))} · Concentración ${duelNum(ss.attempts)+1} de ${duelMax(A)}</h3>${first?`<div class="duel-config"><label class="duel-label">Rasgo<select onchange="setDuelField('${A}','choice',this.value)">${[['agilidad','Agilidad'],['reflejos','Reflejos'],['vacio','Vacío']].map(([k,l])=>`<option value="${k}" ${ss.choice===k?'selected':''}>${l} (${(ss.revealed||[]).includes(k)?duelEsc(d[k]??'—'):'???'})</option>`).join('')}</select></label><label class="duel-label">Máx. concentraciones<input type="number" min="0" value="${duelMax(A)}" onchange="setDuelField('${A}','maxConcentrations',Math.max(0,Number(this.value)||0))"></label></div>`:''}${rollbox(A,'con',poolFor(d,ss.choice))}<button class="init-btn" onclick="showDuelRoll('${A}','concentration')">🎲 Concentrarse (NO ${duelNum(st.currentNO,5)})</button></div>`;
+const ex=duelNum(ss.attempts)>0&&duelNum(ss.attempts)>=duelMax(A), vl=duelVoidLeft(A);
+        if(ex) stage=`<div class="duel-step-card duel-turn${duelFx('x'+A+duelNum(ss.attempts))}"><h3>${duelEsc(duelName(A))} no tiene más concentraciones (${duelNum(ss.attempts)} de ${duelMax(A)})</h3><p style="color:#bbb">Si no hace nada, el duelo pasa al ataque de ${duelEsc(duelName(A==='left'?'right':'left'))}.</p>${vl>0?`<button class="init-btn" onclick="spendDuelVoid('${A}')">🌀 Gastar 1 Vacío: +1 concentración (quedan ${vl})</button>`:'<p style="color:#888">Sin puntos de Vacío disponibles.</p>'}<button class="init-btn danger" onclick="endDuelConcentration('${A}')">⚔️ Terminar concentración: ataca ${duelEsc(duelName(A==='left'?'right':'left'))}</button></div>`;
+        else stage=`<div class="duel-step-card duel-turn${duelFx('t'+A+duelNum(ss.attempts)+st.currentNO)}"><h3>Turno de ${duelEsc(duelName(A))} · Concentración ${duelNum(ss.attempts)+1} de ${duelMax(A)}</h3>${first?`<div class="duel-config"><label class="duel-label">Rasgo<select onchange="setDuelField('${A}','choice',this.value)">${[['agilidad','Agilidad'],['reflejos','Reflejos'],['vacio','Vacío']].map(([k,l])=>`<option value="${k}" ${ss.choice===k?'selected':''}>${l} (${(ss.revealed||[]).includes(k)?duelEsc(d[k]??'—'):'???'})</option>`).join('')}</select></label><label class="duel-label">Máx. concentraciones<input type="number" min="0" value="${duelMax(A)}" onchange="setDuelField('${A}','maxConcentrations',Math.max(0,Number(this.value)||0))"></label></div>`:''}${rollbox(A,'con',poolFor(d,ss.choice))}<button class="init-btn" onclick="showDuelRoll('${A}','concentration')">🎲 Concentrarse (NO ${duelNum(st.currentNO,5)})</button></div>`;
       } else if(ph==='attack'){
         const d=dl(A), ss=st[A], v=other(A);
         const pool=(d.atk_roll!==undefined&&d.atk_roll!==''&&d.atk_keep!==undefined&&d.atk_keep!=='')?{roll:duelNum(d.atk_roll),keep:duelNum(d.atk_keep)}:poolFor(d,'reflejos');
-        stage=`<div class="duel-step-card duel-turn${duelFx('atk'+A)}">${st.failedSide?`<div class="duel-exhausted">⚠️ La concentración de ${duelEsc(duelName(st.failedSide))} termina. ${duelEsc(duelName(A))} debe atacar.</div>`:''}<h3>${duelEsc(duelName(A))} desenvaina</h3>${rollbox(A,'atk',pool,duelNum(d.atk_mod))}<button class="init-btn" onclick="showDuelRoll('${A}','attack')">⚔️ Atacar (NO ${duelNum(st[v].lastSuccessfulNO,5)} · ${duelNum(ss.successes)} aumentos gratuitos)</button></div>`;
-      } else {
-        const last=['left','right'].map(s=>st[s].roll).find(r=>r&&r.kind==='attack');
-        stage=`<div class="duel-step-card${duelFx('end'+ph)}"><h3>${ph==='terminado'?'Duelo terminado':'Resolución'}</h3>${resBox(last)}<div class="duel-toolbar">${ph==='resolution'?'<button class="init-btn" onclick="closeDuel()">Cerrar duelo</button>':''}<button class="init-btn danger" onclick="resetDuel()">Nuevo duelo</button></div></div>`;
-      }
-      const kinds={recognition:'Reconocimiento',concentration:'Concentración',attack:'Ataque'}, rolls=(st.rolls||[]).slice(-8);
-      const tl=rolls.length?`<div class="duel-timeline">${rolls.map((r,i)=>`<div class="duel-tl ${r.success?'ok':'ko'}${i===rolls.length-1?duelFx('tl'+r.id):''}"><b>${duelEsc(duelName(r.side))}</b> · ${kinds[r.kind]||r.kind} <span>${r.total} / NO ${r.target}</span> ${r.success?'✦':'✕'}</div>`).join('')}</div>`:'';
-      const surr=turnSide?`<div class="duel-toolbar"><button class="init-btn" onclick="duelSurrender('left')">Se rinde ${duelEsc(duelName('left'))}</button><button class="init-btn" onclick="duelSurrender('right')">Se rinde ${duelEsc(duelName('right'))}</button></div>`:'';
-      root.innerHTML=`<div class="duel-phase-track">${track}</div><div class="duel-arena">${fighter('left')}<div class="duel-hub"><div class="duel-vs">VS</div><div class="duel-no${duelFx('no'+st.currentNO)}">NO<strong>${duelNum(st.currentNO,5)}</strong></div>${ph==='setup'?`<select onchange="updateDuelSetup('mode',this.value)"><option value="primera sangre" ${st.mode==='primera sangre'?'selected':''}>Primera sangre</option><option value="a muerte" ${st.mode==='a muerte'?'selected':''}>A muerte</option></select>`:`<small>${duelEsc(st.mode)}</small>`}<button class="init-btn danger" onclick="resetDuel()">Reiniciar</button></div>${fighter('right')}</div><div class="duel-stage">${stage}</div>${tl}${surr}<details class="duel-log"><summary>Historial completo</summary>${(st.log||[]).slice().reverse().map(x=>`<div>${duelEsc(x)}</div>`).join('')||'Sin acciones todavía.'}</details>`;
-    }
-    window.renderDuelApp=renderDuelApp;
-    window.setDuelField=setDuelField;
-    window.revealDuelAttribute=function(targetSide,key,recognizerSide){
-      const st=window.duelState;
-      const target=st[targetSide]||(st[targetSide]=defaultSide());
-      const recognizer=st[recognizerSide]||(st[recognizerSide]=defaultSide());
-      // Compatibilidad con estados antiguos de Firebase y protección frente a clics inválidos.
-      target.revealed=Array.isArray(target.revealed)?target.revealed:[];
-      if(!recognizer.recognitionSuccess||duelNum(recognizer.recognitionRemaining)<=0||target.revealed.includes(key))return;
-      target.revealed.push(key);
-      recognizer.recognitionRemaining=duelNum(recognizer.recognitionRemaining)-1;
-      const targetName=getDuelist(targetSide==='left'?st.leftId:st.rightId)?.name||(targetSide==='left'?'contendiente izquierdo':'contendiente derecho');
-      const recognizerName=getDuelist(recognizerSide==='left'?st.leftId:st.rightId)?.name||(recognizerSide==='left'?'contendiente izquierdo':'contendiente derecho');
-      duelLog(`${recognizerName} descubre ${DUEL_ATTRS.find(x=>x[0]===key)?.[1]||key} de ${targetName}.`);
-      persistDuel();renderDuelApp();
-    };
-    window.duelSurrender=function(side){const d=getDuelist(side==='left'?window.duelState.leftId:window.duelState.rightId);window.duelState.phase='terminado';duelLog(`${d?.name||side} se rinde. El rival es vencedor.`);renderDuelApp();};
-    function renderDuelistNpcApp(){
-      const root=document.getElementById('duelist-npc-app');if(!root)return; const npcs=window.duelistNpcs||[];
-      root.innerHTML=`<div class="duel-toolbar"><p>Catálogo compartido de PNJ para duelos. Las fichas se sincronizan mediante Firebase; las imágenes se guardan en el repositorio GitHub.</p><button class="init-btn" onclick="addDuelistNpc()">＋ Añadir PNJ duelista</button></div>`+npcs.map((n,i)=>`<div class="npc-duelist-card"><div class="npc-duelist-head"><img src="${duelEsc(n.image||'images/icono.png')}" onerror="this.onerror=null;this.src='images/icono.png'"><label>Nombre<input value="${duelEsc(n.name||'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','name',this.value)"></label><label>Ruta de imagen en GitHub<input value="${duelEsc(n.image||'')}" placeholder="imagenes/duelistas/nombre-del-pnj.webp" onchange="editDuelistNpc('${duelEsc(n.id)}','image',this.value)"><small style="display:block;color:#aaa;margin-top:4px;">Ej.: imagenes/duelistas/kagashawa.webp</small></label><button class="init-btn danger" onclick="deleteDuelistNpc('${duelEsc(n.id)}')">Eliminar</button></div><div class="npc-duelist-fields">${DUEL_ATTRS.map(([k,label])=>`<label>${label}<input type="number" value="${duelEsc(n[k]??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','${k}',this.value)"></label>`).join('')}<label>Dados ataque: tirar<input type="number" value="${duelEsc(n.atk_roll??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_roll',this.value)"></label><label>Dados ataque: guardar<input type="number" value="${duelEsc(n.atk_keep??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_keep',this.value)"></label><label>Modificador ataque<input type="number" value="${duelEsc(n.atk_mod??0)}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_mod',this.value)"></label></div></div>`).join('')||'<p>Aún no hay PNJ duelistas. Pulsa «Añadir PNJ duelista» para crear el primero.</p>';
-    }
-    window.renderDuelistNpcApp=renderDuelistNpcApp;
-    window.addDuelistNpc=function(){const id='npc_'+Date.now();window.duelistNpcs=[...(window.duelistNpcs||[]),{id,name:'Nuevo PNJ',image:'',agilidad:1,consciencia:1,woundPenalty:0,iajustsu:1,reconocimiento:1,reflejos:1,voidRemaining:1,vacio:1,atk_roll:2,atk_keep:1,atk_mod:0}];if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
-    window.editDuelistNpc=function(id,key,value){window.duelistNpcs=(window.duelistNpcs||[]).map(n=>n.id===id?{...n,[key]:['name','image'].includes(key)?value:duelNum(value)}:n);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);if(key==='image'||key==='name')renderDuelistNpcApp();};
-    window.deleteDuelistNpc=function(id){if(!confirm('¿Eliminar este PNJ duelista?'))return;window.duelistNpcs=(window.duelistNpcs||[]).filter(n=>n.id!==id);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
-
-    function switchTab(tabName) {
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-
-      const activeSection = document.getElementById(`page-${tabName}`);
-      if (activeSection) activeSection.classList.add('active');
-
-      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
-        btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)
-      );
-      if (activeBtn) activeBtn.classList.add('active');
-
-      if (tabName === 'duelos') renderDuelApp();
-      else if (tabName === 'pnj-duelistas') renderDuelistNpcApp();
-      else if (tabName === 'bonos') renderDeck('deck-bonos', bonosDeck, true, false);
-      else if (tabName === 'personajes-principales') renderPersonajesPrincipales();
-      else if (tabName === 'hasimaru') renderDeck('deck-hasimaru', hasimaruDeck, false, true);
-      else if (tabName === 'tadasuna') renderDeck('deck-tadasuna', tadasunaDeck, false, true);
-      else if (tabName === 'haikus') renderHaikus();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderInitiative();
-      renderMainTable();
-      initCharacters();
-      renderDeck('deck-bonos', bonosDeck, true, false);
-      renderPersonajesPrincipales();
-      renderDeck('deck-hasimaru', hasimaruDeck, false, true);
-      renderDeck('deck-tadasuna', tadasunaDeck, false, true);
-      renderHaikus();
-      initTacticalMap();
-      renderDuelApp();
-      renderDuelistNpcApp();
-
-      const notesAreaGeneral = document.getElementById('samurai-notes');
-      if (notesAreaGeneral) {
-        notesAreaGeneral.value = localStorage.getItem('leyenda_notas') || '';
-        notesAreaGeneral.addEventListener('input', () => {
-          localStorage.setItem('leyenda_notas', notesAreaGeneral.value);
-        });
-      }
-    });
-  </script>
-</body>
-</html>
+        stage=`<div class="duel-step-card duel-turn${duelFx('atk'+A)}">${st.failedSide?`<div class="duel-exhausted">⚠️ La concentración de ${duelEsc(duelName(st.failedSide))} termina. ${duelEsc(duelName(A))} debe atacar.</div>`:''}<h3>${duelEsc(duelName(A))} desenvaina</h3>${rollbox(A,'atk',pool,duelNum(d.atk_mod))}<button class="init-btn" onclick="showDuelRoll('${A}','attack'
