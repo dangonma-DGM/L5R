@@ -2996,4 +2996,84 @@ const ex=duelNum(ss.attempts)>0&&duelNum(ss.attempts)>=duelMax(A), vl=duelVoidLe
       } else if(ph==='attack'){
         const d=dl(A), ss=st[A], v=other(A);
         const pool=(d.atk_roll!==undefined&&d.atk_roll!==''&&d.atk_keep!==undefined&&d.atk_keep!=='')?{roll:duelNum(d.atk_roll),keep:duelNum(d.atk_keep)}:poolFor(d,'reflejos');
-        stage=`<div class="duel-step-card duel-turn${duelFx('atk'+A)}">${st.failedSide?`<div class="duel-exhausted">⚠️ La concentración de ${duelEsc(duelName(st.failedSide))} termina. ${duelEsc(duelName(A))} debe atacar.</div>`:''}<h3>${duelEsc(duelName(A))} desenvaina</h3>${rollbox(A,'atk',pool,duelNum(d.atk_mod))}<button class="init-btn" onclick="showDuelRoll('${A}','attack'
+        stage=`<div class="duel-step-card duel-turn${duelFx('atk'+A)}">${st.failedSide?`<div class="duel-exhausted">⚠️ La concentración de ${duelEsc(duelName(st.failedSide))} termina. ${duelEsc(duelName(A))} debe atacar.</div>`:''}<h3>${duelEsc(duelName(A))} desenvaina</h3>${rollbox(A,'atk',pool,duelNum(d.atk_mod))}<button class="init-btn" onclick="showDuelRoll('${A}','attack')">⚔️ Atacar (NO ${duelNum(st[v].lastSuccessfulNO,5)} · ${duelNum(ss.successes)} aumentos gratuitos)</button></div>`;
+      } else {
+        const last=['left','right'].map(s=>st[s].roll).find(r=>r&&r.kind==='attack');
+        stage=`<div class="duel-step-card${duelFx('end'+ph)}"><h3>${ph==='terminado'?'Duelo terminado':'Resolución'}</h3>${resBox(last)}<div class="duel-toolbar">${ph==='resolution'?'<button class="init-btn" onclick="closeDuel()">Cerrar duelo</button>':''}<button class="init-btn danger" onclick="resetDuel()">Nuevo duelo</button></div></div>`;
+      }
+      const kinds={recognition:'Reconocimiento',concentration:'Concentración',attack:'Ataque'}, rolls=(st.rolls||[]).slice(-8);
+      const tl=rolls.length?`<div class="duel-timeline">${rolls.map((r,i)=>`<div class="duel-tl ${r.success?'ok':'ko'}${i===rolls.length-1?duelFx('tl'+r.id):''}"><b>${duelEsc(duelName(r.side))}</b> · ${kinds[r.kind]||r.kind} <span>${r.total} / NO ${r.target}</span> ${r.success?'✦':'✕'}</div>`).join('')}</div>`:'';
+      const surr=turnSide?`<div class="duel-toolbar"><button class="init-btn" onclick="duelSurrender('left')">Se rinde ${duelEsc(duelName('left'))}</button><button class="init-btn" onclick="duelSurrender('right')">Se rinde ${duelEsc(duelName('right'))}</button></div>`:'';
+      root.innerHTML=`<div class="duel-phase-track">${track}</div><div class="duel-arena">${fighter('left')}<div class="duel-hub"><div class="duel-vs">VS</div><div class="duel-no${duelFx('no'+st.currentNO)}">NO<strong>${duelNum(st.currentNO,5)}</strong></div>${ph==='setup'?`<select onchange="updateDuelSetup('mode',this.value)"><option value="primera sangre" ${st.mode==='primera sangre'?'selected':''}>Primera sangre</option><option value="a muerte" ${st.mode==='a muerte'?'selected':''}>A muerte</option></select>`:`<small>${duelEsc(st.mode)}</small>`}<button class="init-btn danger" onclick="resetDuel()">Reiniciar</button></div>${fighter('right')}</div><div class="duel-stage">${stage}</div>${tl}${surr}<details class="duel-log"><summary>Historial completo</summary>${(st.log||[]).slice().reverse().map(x=>`<div>${duelEsc(x)}</div>`).join('')||'Sin acciones todavía.'}</details>`;
+    }
+    window.renderDuelApp=renderDuelApp;
+    window.setDuelField=setDuelField;
+    window.revealDuelAttribute=function(targetSide,key,recognizerSide){
+      const st=window.duelState;
+      const target=st[targetSide]||(st[targetSide]=defaultSide());
+      const recognizer=st[recognizerSide]||(st[recognizerSide]=defaultSide());
+      // Compatibilidad con estados antiguos de Firebase y protección frente a clics inválidos.
+      target.revealed=Array.isArray(target.revealed)?target.revealed:[];
+      if(!recognizer.recognitionSuccess||duelNum(recognizer.recognitionRemaining)<=0||target.revealed.includes(key))return;
+      target.revealed.push(key);
+      recognizer.recognitionRemaining=duelNum(recognizer.recognitionRemaining)-1;
+      const targetName=getDuelist(targetSide==='left'?st.leftId:st.rightId)?.name||(targetSide==='left'?'contendiente izquierdo':'contendiente derecho');
+      const recognizerName=getDuelist(recognizerSide==='left'?st.leftId:st.rightId)?.name||(recognizerSide==='left'?'contendiente izquierdo':'contendiente derecho');
+      duelLog(`${recognizerName} descubre ${DUEL_ATTRS.find(x=>x[0]===key)?.[1]||key} de ${targetName}.`);
+      persistDuel();renderDuelApp();
+    };
+    window.duelSurrender=function(side){const d=getDuelist(side==='left'?window.duelState.leftId:window.duelState.rightId);window.duelState.phase='terminado';duelLog(`${d?.name||side} se rinde. El rival es vencedor.`);renderDuelApp();};
+    function renderDuelistNpcApp(){
+      const root=document.getElementById('duelist-npc-app');if(!root)return; const npcs=window.duelistNpcs||[];
+      root.innerHTML=`<div class="duel-toolbar"><p>Catálogo compartido de PNJ para duelos. Las fichas se sincronizan mediante Firebase; las imágenes se guardan en el repositorio GitHub.</p><button class="init-btn" onclick="addDuelistNpc()">＋ Añadir PNJ duelista</button></div>`+npcs.map((n,i)=>`<div class="npc-duelist-card"><div class="npc-duelist-head"><img ${duelImgAttrs(n,n.image)}><label>Nombre<input value="${duelEsc(n.name||'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','name',this.value)"></label><label>Imagen alternativa (opcional; por defecto images/duelistas/NOMBRE.png)<input value="${duelEsc(n.image||'')}" placeholder="imagenes/duelistas/nombre-del-pnj.webp" onchange="editDuelistNpc('${duelEsc(n.id)}','image',this.value)"><small style="display:block;color:#aaa;margin-top:4px;">Ej.: imagenes/duelistas/kagashawa.webp</small></label><button class="init-btn danger" onclick="deleteDuelistNpc('${duelEsc(n.id)}')">Eliminar</button></div><div class="npc-duelist-fields">${DUEL_ATTRS.map(([k,label])=>`<label>${label}<input type="number" value="${duelEsc(n[k]??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','${k}',this.value)"></label>`).join('')}<label>Dados ataque: tirar<input type="number" value="${duelEsc(n.atk_roll??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_roll',this.value)"></label><label>Dados ataque: guardar<input type="number" value="${duelEsc(n.atk_keep??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_keep',this.value)"></label><label>Modificador ataque<input type="number" value="${duelEsc(n.atk_mod??0)}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_mod',this.value)"></label></div></div>`).join('')||'<p>Aún no hay PNJ duelistas. Pulsa «Añadir PNJ duelista» para crear el primero.</p>';
+    }
+    window.renderDuelistNpcApp=renderDuelistNpcApp;
+    window.addDuelistNpc=function(){const id='npc_'+Date.now();window.duelistNpcs=[...(window.duelistNpcs||[]),{id,name:'Nuevo PNJ',image:'',agilidad:1,consciencia:1,woundPenalty:0,iajustsu:1,reconocimiento:1,reflejos:1,voidRemaining:1,vacio:1,atk_roll:2,atk_keep:1,atk_mod:0}];if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
+    window.editDuelistNpc=function(id,key,value){window.duelistNpcs=(window.duelistNpcs||[]).map(n=>n.id===id?{...n,[key]:['name','image'].includes(key)?value:duelNum(value)}:n);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);if(key==='image'||key==='name')renderDuelistNpcApp();};
+    window.deleteDuelistNpc=function(id){if(!confirm('¿Eliminar este PNJ duelista?'))return;window.duelistNpcs=(window.duelistNpcs||[]).filter(n=>n.id!==id);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+
+      const activeSection = document.getElementById(`page-${tabName}`);
+      if (activeSection) activeSection.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
+        btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)
+      );
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabName === 'duelos') renderDuelApp();
+      else if (tabName === 'pnj-duelistas') renderDuelistNpcApp();
+      else if (tabName === 'bonos') renderDeck('deck-bonos', bonosDeck, true, false);
+      else if (tabName === 'personajes-principales') renderPersonajesPrincipales();
+      else if (tabName === 'hasimaru') renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      else if (tabName === 'tadasuna') renderDeck('deck-tadasuna', tadasunaDeck, false, true);
+      else if (tabName === 'haikus') renderHaikus();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderInitiative();
+      renderMainTable();
+      initCharacters();
+      renderDeck('deck-bonos', bonosDeck, true, false);
+      renderPersonajesPrincipales();
+      renderDeck('deck-hasimaru', hasimaruDeck, false, true);
+      renderDeck('deck-tadasuna', tadasunaDeck, false, true);
+      renderHaikus();
+      initTacticalMap();
+      renderDuelApp();
+      renderDuelistNpcApp();
+
+      const notesAreaGeneral = document.getElementById('samurai-notes');
+      if (notesAreaGeneral) {
+        notesAreaGeneral.value = localStorage.getItem('leyenda_notas') || '';
+        notesAreaGeneral.addEventListener('input', () => {
+          localStorage.setItem('leyenda_notas', notesAreaGeneral.value);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
