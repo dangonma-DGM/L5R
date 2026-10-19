@@ -1428,13 +1428,13 @@
     });
 
     /* ===== BOTONERA DE SONIDOS COMPARTIDA ===== */
-    // Edita aquí los nombres de archivo si los tuyos son distintos (carpeta sounds/ junto al HTML)
+    // Edita aquí los nombres de archivo si los tuyos son distintos (carpeta images/sounds/ junto al HTML)
     const SOUND_LIST=[
-      {id:'siuu',label:'Siuuu',icon:'⚽',file:'sounds/Siuu.mp3'},
-      {id:'maravillosa',label:'Maravillosa jugada',icon:'👏',file:'sounds/Maravillosa.mp3'},
-      {id:'fatality',label:'Fatality',icon:'💀',file:'sounds/Fatality.mp3'},
-      {id:'ohno',label:'Oh noooo',icon:'🐵',file:'sounds/Oh No.mp3'},
-      {id:'expediente',label:'Expediente X',icon:'👽',file:'sounds/ExpedienteX.mp3'}
+      {id:'siuu',label:'Siuuu',icon:'⚽',file:'images/sounds/Siuu.mp3'},
+      {id:'maravillosa',label:'Maravillosa jugada',icon:'👏',file:'images/sounds/Maravillosa.mp3'},
+      {id:'fatality',label:'Fatality',icon:'💀',file:'images/sounds/Fatality.mp3'},
+      {id:'ohno',label:'Oh noooo',icon:'🐵',file:'images/sounds/Oh No.mp3'},
+      {id:'expediente',label:'Expediente X',icon:'👽',file:'images/sounds/ExpedienteX.mp3'}
     ];
     let sbOn=false, sbVol=0.8, sbCool=0, sbCur=null, sbSeen=null, sbFirst=true;
     try{ sbVol=parseFloat(localStorage.getItem('sbVol'))||0.8; sbOn=localStorage.getItem('sbOn')==='1'; }catch(e){}
