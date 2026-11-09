@@ -236,7 +236,7 @@
       border-radius: 50%;
       border: 2px solid rgba(197, 160, 89, 0.4);
       object-fit: cover;
-      object-position: center top;
+      object-position: center 20%;
       background: #111;
       pointer-events: none;
     }
@@ -341,7 +341,7 @@
       border: 2px solid #c5a059;
       object-fit: cover;
       background-color: #000;
-      object-position: center top;
+      object-position: center 20%;
       cursor: grab;
       pointer-events: auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.8);
@@ -353,7 +353,7 @@
       border-color: #ff5555;
       object-fit: cover;
       background-color: #000;
-      object-position: center top;
+      object-position: center 20%;
     }
 
     .map-token-wrapper {
@@ -578,7 +578,7 @@
       border-radius: 50%;
       border: 2px solid #c5a059;
       object-fit: cover;
-      object-position: center top;
+      object-position: center 20%;
       box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
       background: rgba(30, 30, 30, 0.8);
     }
@@ -736,6 +736,7 @@
       color: #ff5555;
     }
 
+    .player-card{position:relative}.player-armor{position:absolute;top:9px;right:10px;background:rgba(0,0,0,.88);border:1px solid #c5a059;border-radius:5px;padding:4px 7px;color:#ffe39a;font-size:10px;font-weight:bold;z-index:2}.random-picker{width:100%;max-width:1400px;margin:0 0 18px;padding:14px;background:rgba(15,15,15,.94);border:1px solid rgba(197,160,89,.5);border-radius:8px}.random-picker h3{color:#c5a059;margin-bottom:8px}.random-options{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.random-options label{display:flex;gap:5px;align-items:center;color:#eee}.random-result-overlay{display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.88);align-items:center;justify-content:center;flex-direction:column;gap:14px}.random-result-overlay.active{display:flex}.random-result-overlay img{width:min(42vw,260px);height:min(42vw,260px);object-fit:cover;object-position:center 20%;border:4px solid #e0bd62;border-radius:50%;box-shadow:0 0 35px #c5a059}.random-result-overlay strong{font:900 clamp(24px,5vw,48px) Georgia,serif;color:#ffe39a;text-shadow:0 3px 12px #000}.duel-damage-box{margin-top:12px;padding:12px;border:1px solid #8b6c36;border-radius:6px;background:#211b10}.duel-damage-box h4{color:#ffe39a;margin-bottom:8px}
     /* --- Plantilla Individual de Personaje --- */
     .character-container {
       display: flex;
@@ -1093,7 +1094,7 @@
       }
     }
 
-    .duel-app,.duelist-npc-app{color:#eee;max-width:1500px;margin:0 auto}.duel-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(15,15,15,.95);border:1px solid rgba(197,160,89,.45);padding:12px;border-radius:8px;margin:12px 0}.duel-toolbar label,.duel-label{display:flex;flex-direction:column;gap:5px;color:#c5a059;font-size:11px;font-weight:bold}.duel-toolbar select,.duel-panel select,.duel-label input,.duel-label select,.duel-inputs input,.npc-duelist-card input{background:#111;color:#eee;border:1px solid #76613d;border-radius:4px;padding:7px;min-width:0}.duel-no{font-size:16px;color:#ddd;flex:1}.duel-no strong{font-size:24px;color:#c5a059}.duel-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.duel-panel,.npc-duelist-card{background:rgba(15,15,15,.96);border:1px solid rgba(197,160,89,.5);border-radius:8px;padding:14px;min-width:0}.duel-panel h3,.duel-log h3{color:#c5a059;margin-top:0}.duel-person{display:flex;align-items:center;gap:12px;margin:12px 0}.duel-person img,.npc-duelist-head img{width:72px;height:84px;object-fit:cover;border-radius:5px;border:1px solid #c5a059}.duel-attrs{display:grid;grid-template-columns:1fr;gap:5px;margin:10px 0}.duel-attr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;background:#202020;padding:7px;border-radius:4px;font-size:12px}.duel-attr strong{color:#c5a059}.duel-label{margin:10px 0}.duel-roll{border-top:1px solid #5c4a2d;padding-top:9px;margin-top:10px}.duel-roll>b{display:block;color:#c5a059;margin-bottom:7px}.duel-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.duel-inputs label{font-size:10px;color:#aaa;display:flex;flex-direction:column;gap:3px}.duel-inputs input{width:100%;box-sizing:border-box}.duel-result{font-size:12px;background:#242018;padding:9px;border-radius:4px;margin:8px 0;overflow-wrap:anywhere}.duel-counters{display:flex;gap:12px;flex-wrap:wrap;color:#bbb;font-size:12px;padding:8px 0}.duel-counters b{color:#c5a059}.duel-log{background:#101010;border:1px solid #554526;border-radius:8px;padding:12px;margin-top:14px;font-size:12px;line-height:1.7}.npc-duelist-card{margin:12px 0}.npc-duelist-head{display:grid;grid-template-columns:75px minmax(120px,1fr) minmax(160px,1.5fr) auto;align-items:center;gap:10px}.npc-duelist-head label,.npc-duelist-fields label{display:flex;flex-direction:column;gap:5px;color:#c5a059;font-size:11px}.npc-duelist-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.npc-duelist-fields input{width:100%;box-sizing:border-box}@media(max-width:850px){.duel-panels{grid-template-columns:1fr}.npc-duelist-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.npc-duelist-head{grid-template-columns:60px 1fr}.npc-duelist-head img{width:60px;height:70px}}
+    .duel-app,.duelist-npc-app{color:#eee;max-width:1500px;margin:0 auto}.duel-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(15,15,15,.95);border:1px solid rgba(197,160,89,.45);padding:12px;border-radius:8px;margin:12px 0}.duel-toolbar label,.duel-label{display:flex;flex-direction:column;gap:5px;color:#c5a059;font-size:11px;font-weight:bold}.duel-toolbar select,.duel-panel select,.duel-label input,.duel-label select,.duel-inputs input,.npc-duelist-card input{background:#111;color:#eee;border:1px solid #76613d;border-radius:4px;padding:7px;min-width:0}.duel-no{font-size:16px;color:#ddd;flex:1}.duel-no strong{font-size:24px;color:#c5a059}.duel-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.duel-panel,.npc-duelist-card{background:rgba(15,15,15,.96);border:1px solid rgba(197,160,89,.5);border-radius:8px;padding:14px;min-width:0}.duel-panel h3,.duel-log h3{color:#c5a059;margin-top:0}.duel-person{display:flex;align-items:center;gap:12px;margin:12px 0}.duel-person img,.npc-duelist-head img{width:72px;height:84px;object-fit:cover;object-position:center 20%;border-radius:5px;border:1px solid #c5a059}.duel-attrs{display:grid;grid-template-columns:1fr;gap:5px;margin:10px 0}.duel-attr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;background:#202020;padding:7px;border-radius:4px;font-size:12px}.duel-attr strong{color:#c5a059}.duel-label{margin:10px 0}.duel-roll{border-top:1px solid #5c4a2d;padding-top:9px;margin-top:10px}.duel-roll>b{display:block;color:#c5a059;margin-bottom:7px}.duel-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.duel-inputs label{font-size:10px;color:#aaa;display:flex;flex-direction:column;gap:3px}.duel-inputs input{width:100%;box-sizing:border-box}.duel-result{font-size:12px;background:#242018;padding:9px;border-radius:4px;margin:8px 0;overflow-wrap:anywhere}.duel-counters{display:flex;gap:12px;flex-wrap:wrap;color:#bbb;font-size:12px;padding:8px 0}.duel-counters b{color:#c5a059}.duel-log{background:#101010;border:1px solid #554526;border-radius:8px;padding:12px;margin-top:14px;font-size:12px;line-height:1.7}.npc-duelist-card{margin:12px 0}.npc-duelist-head{display:grid;grid-template-columns:75px minmax(120px,1fr) minmax(160px,1.5fr) auto;align-items:center;gap:10px}.npc-duelist-head label,.npc-duelist-fields label{display:flex;flex-direction:column;gap:5px;color:#c5a059;font-size:11px}.npc-duelist-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.npc-duelist-fields input{width:100%;box-sizing:border-box}@media(max-width:850px){.duel-panels{grid-template-columns:1fr}.npc-duelist-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.npc-duelist-head{grid-template-columns:60px 1fr}.npc-duelist-head img{width:60px;height:70px}}
 
 
     /* Presentación cinematográfica del duelo */
@@ -1211,6 +1212,7 @@
       <h1 class="table-title">Mesa de Tiradas en Tiempo Real</h1>
       
       <!-- Cuadrícula de jugadores y dados -->
+      <div class="random-picker"><h3>🎯 Selección aleatoria de objetivo</h3><p style="color:#aaa">Marca los personajes que entran en el sorteo. Puedes seleccionar a todos o solo a algunos.</p><div class="random-options" id="random-player-options"></div><button class="roll-btn" onclick="drawRandomTarget()">🎲 Elegir objetivo al azar</button><span id="random-picker-status" style="margin-left:12px;color:#ffe39a"></span></div>
       <div class="players-grid" id="main-dice-grid"></div>
 
       <!-- Botonera de sonidos compartida -->
@@ -1592,6 +1594,7 @@
         const data = snapshot.val();
         if (data) {
           window.characterSheetsData[char.id] = data;
+          const armor=document.querySelector(`#main-dice-grid [data-armor='${char.id}']`); if(armor)armor.textContent=`🛡️ ND ${Number(data.nd_impacto)||0}`;
 
           Object.keys(data).forEach(field => {
             const inputEl = document.getElementById(`${field}-${char.id}`);
@@ -2569,12 +2572,14 @@
     function renderMainTable() {
       const grid = document.getElementById('main-dice-grid');
       grid.innerHTML = '';
+      renderRandomPicker();
 
       charactersData.forEach(char => {
         window.currentRollTypes[char.id] = 'Ataque';
         const card = document.createElement('div');
         card.className = `player-card ${char.isMaster ? 'master-card' : ''}`;
         card.innerHTML = `
+          <div class="player-armor" data-armor="${char.id}" title="ND de impacto / armadura total">🛡️ ND ${Number(window.characterSheetsData?.[char.id]?.nd_impacto)||0}</div>
           <img src="${char.img1}" alt="${char.name}" class="player-avatar" onerror="this.src='images/icono.png';">
           <div class="player-name">${char.name}</div>
 
@@ -2718,6 +2723,38 @@
       }
     }
 
+    window.renderRandomPicker=function(){
+      const box=document.getElementById('random-player-options'); if(!box)return;
+      const players=charactersData.filter(c=>!c.isMaster);
+      const selected=window.randomTargetIds||players.map(c=>c.id);
+      box.innerHTML=players.map(c=>`<label><input type="checkbox" value="${c.id}" ${selected.includes(c.id)?'checked':''} onchange="toggleRandomTarget('${c.id}',this.checked)"> ${c.name}</label>`).join('');
+      const status=document.getElementById('random-picker-status'); if(status)status.textContent=`${selected.length} participante(s)`;
+    };
+    window.randomTargetIds=window.randomTargetIds||charactersData.filter(c=>!c.isMaster).map(c=>c.id);
+    window.toggleRandomTarget=function(id,checked){const a=new Set(window.randomTargetIds||[]);checked?a.add(id):a.delete(id);window.randomTargetIds=[...a];renderRandomPicker();};
+    // Entero uniforme entre 0 y maxExclusive-1. Evita sesgos de módulo y usa
+    // el generador criptográfico del navegador cuando está disponible.
+    function secureRandomIndex(maxExclusive){
+      if(maxExclusive<=1)return 0;
+      if(window.crypto&&typeof window.crypto.getRandomValues==='function'){
+        const range=0x100000000;
+        const limit=range-(range%maxExclusive);
+        const value=new Uint32Array(1);
+        let n; do{window.crypto.getRandomValues(value);n=value[0];}while(n>=limit);
+        return n%maxExclusive;
+      }
+      return Math.floor(Math.random()*maxExclusive);
+    }
+    window.drawRandomTarget=function(){
+      const pool=charactersData.filter(c=>!c.isMaster&&(window.randomTargetIds||[]).includes(c.id));
+      if(!pool.length){alert('Selecciona al menos un personaje para el sorteo.');return;}
+      const chosen=pool[secureRandomIndex(pool.length)];
+      const overlay=document.getElementById('random-result-overlay'),img=document.getElementById('random-result-image'),name=document.getElementById('random-result-name');
+      overlay.classList.add('active'); name.textContent='SORTEANDO…';
+      let ticks=0; window.clearInterval(window.randomDrawTimer);
+      window.randomDrawTimer=window.setInterval(()=>{const preview=pool[secureRandomIndex(pool.length)];img.src=preview.img1;name.textContent=preview.name;ticks++;if(ticks>=12){window.clearInterval(window.randomDrawTimer);img.src=chosen.img1;name.textContent=chosen.name;const status=document.getElementById('random-picker-status');if(status)status.textContent=`Elegido: ${chosen.name}`;window.setTimeout(()=>overlay.classList.remove('active'),1100);}},100);
+    };
+
     function shuffleArray(array) {
       const copy = [...array];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -2838,7 +2875,7 @@
       if(!c) return null;
       return {id:c.id,name:c.name,image:c.img1,agilidad:sh.agilidad,consciencia:sh.consciencia,woundPenalty:sh.penalizacion_heridas,
         iajustsu:sh.iajustsu,reconocimiento:sh.reconocimiento,reflejos:sh.reflejos,vacio:sh.vacio,
-        voidRemaining:Math.max(0,duelNum(sh.vacio)-duelNum(sh.vacio_gastado)), atk_roll:sh.atk_roll,atk_keep:sh.atk_keep,atk_mod:sh.atk_mod};
+        voidRemaining:Math.max(0,duelNum(sh.vacio)-duelNum(sh.vacio_gastado)), atk_roll:sh.atk_roll,atk_keep:sh.atk_keep,atk_mod:sh.atk_mod,dmg_roll:sh.dmg_roll,dmg_keep:sh.dmg_keep,dmg_mod:sh.dmg_mod};
     }
     function defaultSide(){return {raises:0,revealed:[],choice:'agilidad',maxConcentrations:0,attempts:0,successes:0,voidSpent:0,lastSuccessfulNO:5,roll:null};}
     function persistDuel(){ if(window.saveDuelState) window.saveDuelState(window.duelState); }
@@ -2850,7 +2887,7 @@
       const sorted=[...ds].sort((a,b)=>b.sum-a.sum); const kept=sorted.slice(0,keep); const total=kept.reduce((a,d)=>a+d.sum,0)+duelNum(mod);
       return {roll,keep,mod,total,ds,kept,detail:ds.map((d,i)=>`${i+1}:${d.parts.join('+')}${kept.includes(d)?' ✓':''}`).join(' | ')};
     }
-    function poolFor(d, trait, skill){ const t=Math.max(0,duelNum(d?.[trait])); const k=Math.max(0,duelNum(d?.iajustsu)); return {roll:t+k,keep:t}; }
+    function poolFor(d, trait, skill='iajustsu'){ const t=Math.max(0,duelNum(d?.[trait])); const k=Math.max(0,duelNum(d?.[skill])); return {roll:t+k,keep:t,trait,skill}; }
     function showDuelRoll(side,kind){
       window.duelBusy=true;
       try{ showDuelRollInner(side,kind); } finally { window.duelBusy=false; renderDuelApp(); }
@@ -2862,9 +2899,9 @@
       if(kind==='attack'&&(st.phase!=='attack'||st.turn!==side)){renderDuelApp();return;}
       if(kind==='concentration'){const ss=st[side]||(st[side]=defaultSide());const maxAllowed=Math.max(0,duelNum(ss.maxConcentrations,duelNum(d[ss.choice])) || duelNum(d[ss.choice]));if(duelNum(ss.attempts)>=maxAllowed){const opponentSide=side==='left'?'right':'left';st.phase='attack';st.failedSide=side;st.turn=opponentSide;duelLog(`${d.name} no tiene concentraciones disponibles. ${getDuelist(opponentSide==='left'?st.leftId:st.rightId)?.name||'El rival'} debe atacar.`);renderDuelApp();return;}}
       let trait='consciencia', label='Consciencia / Iajutsu', target=5, mod=0, pool;
-      if(kind==='recognition'){pool=poolFor(d,'consciencia','iajustsu'); target=5+5*duelNum(st[side].raises);}
-      else if(kind==='concentration'){trait=st[side].choice; label=`${trait} / Iajutsu`; pool=poolFor(d,trait,'iajustsu'); target=duelNum(st.currentNO,5);}
-      else {trait='reflejos';label='Reflejos / Iajutsu';pool=poolFor(d,'reflejos','iajustsu'); if(d.atk_roll!==undefined && d.atk_roll!=='' && d.atk_keep!==undefined && d.atk_keep!==''){pool={roll:duelNum(d.atk_roll,pool.roll),keep:duelNum(d.atk_keep,pool.keep)};} target=duelNum(st[side==='left'?'right':'left'].lastSuccessfulNO,5);mod=duelNum(d.atk_mod);}
+      if(kind==='recognition'){pool=poolFor(d,'consciencia','reconocimiento'); label='Consciencia / Reconocimiento'; target=5+5*duelNum(st[side].raises);}
+      else if(kind==='concentration'){trait=st[side].choice; label=`${trait[0].toUpperCase()+trait.slice(1)} / Iajutsu`; pool=poolFor(d,trait,'iajustsu'); target=duelNum(st.currentNO,5);}
+      else {trait='reflejos';label='Reflejos / Iajutsu';pool=poolFor(d,'reflejos','iajustsu'); if(d.atk_roll!==undefined && d.atk_roll!=='' && d.atk_keep!==undefined && d.atk_keep!==''){pool={...pool,roll:duelNum(d.atk_roll,pool.roll),keep:duelNum(d.atk_keep,pool.keep)};} target=duelNum(st[side==='left'?'right':'left'].lastSuccessfulNO,5);mod=duelNum(d.atk_mod);}
       const prefix=kind==='attack'?'atk':kind==='concentration'?'con':'rec';
       const rEl=document.getElementById(`duel-${side}-${prefix}-roll`), kEl=document.getElementById(`duel-${side}-${prefix}-keep`), mEl=document.getElementById(`duel-${side}-${prefix}-mod`);
       if(rEl) pool.roll=duelNum(rEl.value,pool.roll); if(kEl) pool.keep=duelNum(kEl.value,pool.keep); if(mEl) mod=duelNum(mEl.value,mod);
@@ -2979,7 +3016,7 @@
         const pips=(ph==='setup')?'':`<div class="duel-pips" title="Concentraciones">${Array.from({length:Math.min(max,12)},(_,i)=>`<i class="${i<duelNum(ss.successes)?'ok':i<duelNum(ss.attempts)?'ko':''}"></i>`).join('')}</div>`;
         return `<div class="duel-fighter${turnSide===side?' is-turn':''}${turnSide&&turnSide!==side?' is-wait':''}">${sel}<div class="duel-person"><img ${duelImgAttrs(d,d.image)}><b>${duelEsc(d.name)}</b></div>${pips}${ph==='concentration'?`<div class="duel-adjust" title="Técnicas de escuela u otros efectos"><span>Concentraciones</span><button class="init-btn" onclick="adjustDuelConcentrations('${side}',-1)">−</button><b>${max}</b><button class="init-btn" onclick="adjustDuelConcentrations('${side}',1)">+</button></div>`:''}<div class="duel-attrs">${rows}</div></div>`;
       };
-      const rollbox=(side,prefix,pool,mod=0)=>`<details class="duel-dice"><summary>Ajustar dados · ${pool.roll}g${pool.keep}${mod?(mod>0?'+':'')+mod:''}</summary><div class="duel-inputs"><label>Tirar <input id="duel-${side}-${prefix}-roll" type="number" min="1" value="${pool.roll||1}"></label><label>Guardar <input id="duel-${side}-${prefix}-keep" type="number" min="1" value="${pool.keep||1}"></label><label>Mod <input id="duel-${side}-${prefix}-mod" type="number" value="${mod}"></label></div></details>`;
+      const rollbox=(side,prefix,pool,mod=0)=>`<div class="duel-dice-label" style="font-size:11px;color:#ffe39a;margin:7px 0">Tirada: ${duelEsc(pool.trait?pool.trait[0].toUpperCase()+pool.trait.slice(1):'')}${pool.skill?' + '+(pool.skill==='iajustsu'?'Iajutsu':pool.skill[0].toUpperCase()+pool.skill.slice(1)):''} · ${pool.roll}g${pool.keep}</div><details class="duel-dice"><summary>Ajustar dados · ${pool.roll}g${pool.keep}${mod?(mod>0?'+':'')+mod:''}</summary><div class="duel-inputs"><label>Tirar <input id="duel-${side}-${prefix}-roll" type="number" min="1" value="${pool.roll||1}"></label><label>Guardar <input id="duel-${side}-${prefix}-keep" type="number" min="1" value="${pool.keep||1}"></label><label>Mod <input id="duel-${side}-${prefix}-mod" type="number" value="${mod}"></label></div></details>`;
       const resBox=r=>r?`<div class="duel-result${duelFx('r'+r.cinematicId)}"><span class="result-verdict ${r.success?'success':'failure'}">${r.success?'✦ ÉXITO':'✕ FALLO'}</span><br>${duelEsc(r.label)}: <b style="font-size:26px;color:#fff">${r.total}</b> <span style="color:#aaa">contra NO ${r.target}</span><details class="duel-dice"><summary>Dados</summary><small>${duelEsc(r.detail||'')}</small></details></div>`:'';
 
       let stage='';
@@ -2998,8 +3035,8 @@ const ex=duelNum(ss.attempts)>0&&duelNum(ss.attempts)>=duelMax(A), vl=duelVoidLe
         const pool=(d.atk_roll!==undefined&&d.atk_roll!==''&&d.atk_keep!==undefined&&d.atk_keep!=='')?{roll:duelNum(d.atk_roll),keep:duelNum(d.atk_keep)}:poolFor(d,'reflejos');
         stage=`<div class="duel-step-card duel-turn${duelFx('atk'+A)}">${st.failedSide?`<div class="duel-exhausted">⚠️ La concentración de ${duelEsc(duelName(st.failedSide))} termina. ${duelEsc(duelName(A))} debe atacar.</div>`:''}<h3>${duelEsc(duelName(A))} desenvaina</h3>${rollbox(A,'atk',pool,duelNum(d.atk_mod))}<button class="init-btn" onclick="showDuelRoll('${A}','attack')">⚔️ Atacar (NO ${duelNum(st[v].lastSuccessfulNO,5)} · ${duelNum(ss.successes)} aumentos gratuitos)</button></div>`;
       } else {
-        const last=['left','right'].map(s=>st[s].roll).find(r=>r&&r.kind==='attack');
-        stage=`<div class="duel-step-card${duelFx('end'+ph)}"><h3>${ph==='terminado'?'Duelo terminado':'Resolución'}</h3>${resBox(last)}<div class="duel-toolbar">${ph==='resolution'?'<button class="init-btn" onclick="closeDuel()">Cerrar duelo</button>':''}<button class="init-btn danger" onclick="resetDuel()">Nuevo duelo</button></div></div>`;
+        const last=['left','right'].map(s=>st[s].roll).find(r=>r&&r.kind==='attack'); const attackerSide=last?.attacker||A; const attacker=dl(attackerSide); const dmgPool={roll:duelNum(attacker?.dmg_roll,1),keep:duelNum(attacker?.dmg_keep,1),mod:duelNum(attacker?.dmg_mod)};
+        stage=`<div class="duel-step-card${duelFx('end'+ph)}"><h3>${ph==='terminado'?'Duelo terminado':'Resolución'}</h3>${resBox(last)}${last?.success?`<div class="duel-damage-box"><h4>💥 Daño de ${duelEsc(attacker?.name||'atacante')}</h4><p style="color:#bbb;font-size:11px;margin-bottom:8px">Daño de ficha: ${dmgPool.roll}g${dmgPool.keep}${dmgPool.mod?` ${dmgPool.mod>0?'+':''}${dmgPool.mod}`:''}. Puedes modificar los dados antes de tirar.</p>${st.damageRoll?`<div class="duel-result">Daño: <b style="font-size:24px;color:#ffe39a">${st.damageRoll.total}</b> · ${duelEsc(st.damageRoll.detail)}</div>`:`<div class="duel-inputs"><label>Tirar<input id="duel-damage-roll" type="number" min="1" value="${Math.max(1,dmgPool.roll)}"></label><label>Guardar<input id="duel-damage-keep" type="number" min="1" value="${Math.max(1,dmgPool.keep)}"></label><label>Mod<input id="duel-damage-mod" type="number" value="${dmgPool.mod}"></label></div><button class="init-btn" onclick="rollDuelDamage('${attackerSide}')">🎲 Tirar daño</button>`}</div>`:''}<div class="duel-toolbar">${ph==='resolution'?'<button class="init-btn" onclick="closeDuel()">Cerrar duelo</button>':''}<button class="init-btn danger" onclick="resetDuel()">Nuevo duelo</button></div></div>`;
       }
       const kinds={recognition:'Reconocimiento',concentration:'Concentración',attack:'Ataque'}, rolls=(st.rolls||[]).slice(-8);
       const tl=rolls.length?`<div class="duel-timeline">${rolls.map((r,i)=>`<div class="duel-tl ${r.success?'ok':'ko'}${i===rolls.length-1?duelFx('tl'+r.id):''}"><b>${duelEsc(duelName(r.side))}</b> · ${kinds[r.kind]||r.kind} <span>${r.total} / NO ${r.target}</span> ${r.success?'✦':'✕'}</div>`).join('')}</div>`:'';
@@ -3023,12 +3060,21 @@ const ex=duelNum(ss.attempts)>0&&duelNum(ss.attempts)>=duelMax(A), vl=duelVoidLe
       persistDuel();renderDuelApp();
     };
     window.duelSurrender=function(side){const d=getDuelist(side==='left'?window.duelState.leftId:window.duelState.rightId);window.duelState.phase='terminado';duelLog(`${d?.name||side} se rinde. El rival es vencedor.`);renderDuelApp();};
+    window.rollDuelDamage=function(side){
+      const st=window.duelState,d=getDuelist(duelSideId(side));if(!d)return;
+      const roll=duelNum(document.getElementById('duel-damage-roll')?.value,d.dmg_roll||1);
+      const keep=duelNum(document.getElementById('duel-damage-keep')?.value,d.dmg_keep||1);
+      const mod=duelNum(document.getElementById('duel-damage-mod')?.value,d.dmg_mod||0);
+      const r=rollPool(roll,keep,mod);st.damageRoll={...r,side,label:'Daño'};
+      duelLog(`${d.name} tira daño ${r.roll}g${r.keep}: ${r.total}.`);persistDuel();renderDuelApp();
+    };
+
     function renderDuelistNpcApp(){
       const root=document.getElementById('duelist-npc-app');if(!root)return; const npcs=window.duelistNpcs||[];
-      root.innerHTML=`<div class="duel-toolbar"><p>Catálogo compartido de PNJ para duelos. Las fichas se sincronizan mediante Firebase; las imágenes se guardan en el repositorio GitHub.</p><button class="init-btn" onclick="addDuelistNpc()">＋ Añadir PNJ duelista</button></div>`+npcs.map((n,i)=>`<div class="npc-duelist-card"><div class="npc-duelist-head"><img ${duelImgAttrs(n,n.image)}><label>Nombre<input value="${duelEsc(n.name||'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','name',this.value)"></label><label>Imagen alternativa (opcional; por defecto images/duelistas/NOMBRE.png)<input value="${duelEsc(n.image||'')}" placeholder="imagenes/duelistas/nombre-del-pnj.webp" onchange="editDuelistNpc('${duelEsc(n.id)}','image',this.value)"><small style="display:block;color:#aaa;margin-top:4px;">Ej.: imagenes/duelistas/kagashawa.webp</small></label><button class="init-btn danger" onclick="deleteDuelistNpc('${duelEsc(n.id)}')">Eliminar</button></div><div class="npc-duelist-fields">${DUEL_ATTRS.map(([k,label])=>`<label>${label}<input type="number" value="${duelEsc(n[k]??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','${k}',this.value)"></label>`).join('')}<label>Dados ataque: tirar<input type="number" value="${duelEsc(n.atk_roll??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_roll',this.value)"></label><label>Dados ataque: guardar<input type="number" value="${duelEsc(n.atk_keep??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_keep',this.value)"></label><label>Modificador ataque<input type="number" value="${duelEsc(n.atk_mod??0)}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_mod',this.value)"></label></div></div>`).join('')||'<p>Aún no hay PNJ duelistas. Pulsa «Añadir PNJ duelista» para crear el primero.</p>';
+      root.innerHTML=`<div class="duel-toolbar"><p>Catálogo compartido de PNJ para duelos. Las fichas se sincronizan mediante Firebase; las imágenes se guardan en el repositorio GitHub.</p><button class="init-btn" onclick="addDuelistNpc()">＋ Añadir PNJ duelista</button></div>`+npcs.map((n,i)=>`<div class="npc-duelist-card"><div class="npc-duelist-head"><img ${duelImgAttrs(n,n.image)}><label>Nombre<input value="${duelEsc(n.name||'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','name',this.value)"></label><label>Imagen alternativa (opcional; por defecto images/duelistas/NOMBRE.png)<input value="${duelEsc(n.image||'')}" placeholder="imagenes/duelistas/nombre-del-pnj.webp" onchange="editDuelistNpc('${duelEsc(n.id)}','image',this.value)"><small style="display:block;color:#aaa;margin-top:4px;">Ej.: imagenes/duelistas/kagashawa.webp</small></label><button class="init-btn danger" onclick="deleteDuelistNpc('${duelEsc(n.id)}')">Eliminar</button></div><div class="npc-duelist-fields">${DUEL_ATTRS.map(([k,label])=>`<label>${label}<input type="number" value="${duelEsc(n[k]??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','${k}',this.value)"></label>`).join('')}<label>Dados ataque: tirar<input type="number" value="${duelEsc(n.atk_roll??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_roll',this.value)"></label><label>Dados ataque: guardar<input type="number" value="${duelEsc(n.atk_keep??'')}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_keep',this.value)"></label><label>Modificador ataque<input type="number" value="${duelEsc(n.atk_mod??0)}" onchange="editDuelistNpc('${duelEsc(n.id)}','atk_mod',this.value)"></label><label>Dados de daño: tirar<input type="number" value="${duelEsc(n.dmg_roll??1)}" onchange="editDuelistNpc('${duelEsc(n.id)}','dmg_roll',this.value)"></label><label>Dados de daño: guardar<input type="number" value="${duelEsc(n.dmg_keep??1)}" onchange="editDuelistNpc('${duelEsc(n.id)}','dmg_keep',this.value)"></label><label>Modificador daño<input type="number" value="${duelEsc(n.dmg_mod??0)}" onchange="editDuelistNpc('${duelEsc(n.id)}','dmg_mod',this.value)"></label></div></div>`).join('')||'<p>Aún no hay PNJ duelistas. Pulsa «Añadir PNJ duelista» para crear el primero.</p>';
     }
     window.renderDuelistNpcApp=renderDuelistNpcApp;
-    window.addDuelistNpc=function(){const id='npc_'+Date.now();window.duelistNpcs=[...(window.duelistNpcs||[]),{id,name:'Nuevo PNJ',image:'',agilidad:1,consciencia:1,woundPenalty:0,iajustsu:1,reconocimiento:1,reflejos:1,voidRemaining:1,vacio:1,atk_roll:2,atk_keep:1,atk_mod:0}];if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
+    window.addDuelistNpc=function(){const id='npc_'+Date.now();window.duelistNpcs=[...(window.duelistNpcs||[]),{id,name:'Nuevo PNJ',image:'',agilidad:1,consciencia:1,woundPenalty:0,iajustsu:1,reconocimiento:1,reflejos:1,voidRemaining:1,vacio:1,atk_roll:2,atk_keep:1,atk_mod:0,dmg_roll:1,dmg_keep:1,dmg_mod:0}];if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
     window.editDuelistNpc=function(id,key,value){window.duelistNpcs=(window.duelistNpcs||[]).map(n=>n.id===id?{...n,[key]:['name','image'].includes(key)?value:duelNum(value)}:n);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);if(key==='image'||key==='name')renderDuelistNpcApp();};
     window.deleteDuelistNpc=function(id){if(!confirm('¿Eliminar este PNJ duelista?'))return;window.duelistNpcs=(window.duelistNpcs||[]).filter(n=>n.id!==id);if(window.saveDuelistNpcs)window.saveDuelistNpcs(window.duelistNpcs);renderDuelistNpcApp();};
 
@@ -3075,5 +3121,6 @@ const ex=duelNum(ss.attempts)>0&&duelNum(ss.attempts)>=duelMax(A), vl=duelVoidLe
       }
     });
   </script>
+<div id="random-result-overlay" class="random-result-overlay"><img id="random-result-image" src="" alt="Objetivo elegido"><strong id="random-result-name"></strong></div>
 </body>
 </html>
